@@ -1,0 +1,71 @@
+[tool.poetry]
+name = "equ-ihome-sim-engine"
+version = "0.1.0"
+description = "Monte Carlo simulation engine for home equity investment funds"
+authors = ["Equihome Partners <info@equihomepartners.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^1.24.3"
+pandas = "^2.0.1"
+fastapi = "^0.95.2"
+uvicorn = "^0.22.0"
+pydantic = "^1.10.8"
+scipy = "^1.10.1"
+prometheus-client = "^0.16.0"
+structlog = "^23.1.0"
+boto3 = "^1.26.142"
+sqlalchemy = "^2.0.15"
+psycopg2-binary = "^2.9.6"
+strawberry-graphql = "^0.177.1"
+python-json-logger = "^2.0.7"
+typer = "^0.9.0"
+rich = "^13.3.5"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.1"
+black = "^23.3.0"
+ruff = "^0.0.270"
+mypy = "^1.3.0"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.10.0"
+pytest-asyncio = "^0.21.0"
+httpx = "^0.24.1"
+types-requests = "^2.31.0.1"
+types-boto3 = "^1.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+select = ["E", "F", "B", "I", "N", "UP", "ANN", "S", "A", "C4", "T20", "PT", "RET", "SIM"]
+ignore = ["ANN101", "ANN102", "ANN401"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+strict_optional = true
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (deselect with '-k \"not slow\"')",
+]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+python_classes = "Test*"

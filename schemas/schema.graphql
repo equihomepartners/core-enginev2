@@ -1,0 +1,168 @@
+type Query {
+  simulation(id: ID!): Simulation
+  simulations(limit: Int, offset: Int): [Simulation!]!
+  metrics(simulationId: ID!): SimulationMetrics
+}
+
+type Mutation {
+  runSimulation(config: SimulationConfigInput!): Simulation!
+  cancelSimulation(id: ID!): Boolean!
+}
+
+type Simulation {
+  id: ID!
+  status: SimulationStatus!
+  config: SimulationConfig!
+  results: SimulationResults
+  createdAt: DateTime!
+  completedAt: DateTime
+}
+
+enum SimulationStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+type SimulationConfig {
+  fundSize: Float!
+  fundTerm: Int!
+  vintageYear: Int!
+  gpCommitmentPercentage: Float!
+  hurdleRate: Float!
+  carriedInterestRate: Float!
+  waterfallStructure: String!
+  managementFeeRate: Float!
+  managementFeeBasis: String!
+  catchUpRate: Float!
+  reinvestmentPeriod: Int!
+  avgLoanSize: Float!
+  loanSizeStdDev: Float!
+  minLoanSize: Float!
+  maxLoanSize: Float!
+  avgLoanTerm: Float!
+  avgLoanInterestRate: Float!
+  avgLoanLtv: Float!
+  ltvStdDev: Float!
+  minLtv: Float!
+  maxLtv: Float!
+  zoneAllocations: ZoneAllocations!
+  appreciationRates: ZoneRates!
+  defaultRates: ZoneRates!
+  recoveryRates: ZoneRates!
+  monteCarloEnabled: Boolean!
+  numSimulations: Int!
+}
+
+input SimulationConfigInput {
+  fundSize: Float
+  fundTerm: Int
+  vintageYear: Int
+  gpCommitmentPercentage: Float
+  hurdleRate: Float
+  carriedInterestRate: Float
+  waterfallStructure: String
+  managementFeeRate: Float
+  managementFeeBasis: String
+  catchUpRate: Float
+  reinvestmentPeriod: Int
+  avgLoanSize: Float
+  loanSizeStdDev: Float
+  minLoanSize: Float
+  maxLoanSize: Float
+  avgLoanTerm: Float
+  avgLoanInterestRate: Float
+  avgLoanLtv: Float
+  ltvStdDev: Float
+  minLtv: Float
+  maxLtv: Float
+  zoneAllocations: ZoneAllocationsInput
+  appreciationRates: ZoneRatesInput
+  defaultRates: ZoneRatesInput
+  recoveryRates: ZoneRatesInput
+  monteCarloEnabled: Boolean
+  numSimulations: Int
+}
+
+type ZoneAllocations {
+  green: Float!
+  orange: Float!
+  red: Float!
+}
+
+input ZoneAllocationsInput {
+  green: Float!
+  orange: Float!
+  red: Float!
+}
+
+type ZoneRates {
+  green: Float!
+  orange: Float!
+  red: Float!
+}
+
+input ZoneRatesInput {
+  green: Float!
+  orange: Float!
+  red: Float!
+}
+
+type SimulationResults {
+  metrics: SimulationMetrics!
+  monteCarlo: MonteCarloResults
+  cashflows: [Cashflow!]!
+}
+
+type SimulationMetrics {
+  irr: Float
+  equityMultiple: Float
+  roi: Float
+  paybackPeriod: Float
+  var95: Float
+  var99: Float
+  sharpeRatio: Float
+  maxDrawdown: Float
+  volatility: Float
+  sortinoRatio: Float
+  calmarRatio: Float
+  beta: Float
+  alpha: Float
+  informationRatio: Float
+  trackingError: Float
+  downsideDeviation: Float
+  upsidePotential: Float
+  downsideRisk: Float
+  upsideCapture: Float
+  downsideCapture: Float
+}
+
+type MonteCarloResults {
+  numSimulations: Int!
+  irrDistribution: Distribution!
+  equityMultipleDistribution: Distribution!
+}
+
+type Distribution {
+  mean: Float!
+  median: Float!
+  std: Float!
+  min: Float!
+  max: Float!
+  percentile5: Float!
+  percentile25: Float!
+  percentile75: Float!
+  percentile95: Float!
+}
+
+type Cashflow {
+  year: Float!
+  inflow: Float!
+  outflow: Float!
+  net: Float!
+  cumulative: Float!
+}
+
+scalar DateTime

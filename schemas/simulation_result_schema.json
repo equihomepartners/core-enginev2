@@ -1,0 +1,2607 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Simulation Result Schema",
+  "description": "Schema for simulation results",
+  "type": "object",
+  "properties": {
+    "simulation_id": {
+      "type": "string",
+      "description": "Unique identifier for the simulation run"
+    },
+    "run_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the simulation was run"
+    },
+    "config": {
+      "type": "object",
+      "description": "Configuration used for the simulation"
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "irr": {
+          "type": "number",
+          "description": "Internal Rate of Return"
+        },
+        "equity_multiple": {
+          "type": "number",
+          "description": "Equity Multiple"
+        },
+        "roi": {
+          "type": "number",
+          "description": "Return on Investment"
+        },
+        "payback_period": {
+          "type": ["number", "null"],
+          "description": "Payback Period in years"
+        },
+        "var_95": {
+          "type": "number",
+          "description": "Value at Risk (95%)"
+        },
+        "var_99": {
+          "type": "number",
+          "description": "Value at Risk (99%)"
+        },
+        "sharpe_ratio": {
+          "type": "number",
+          "description": "Sharpe Ratio"
+        },
+        "max_drawdown": {
+          "type": "number",
+          "description": "Maximum Drawdown"
+        },
+        "volatility": {
+          "type": "number",
+          "description": "Volatility"
+        },
+        "sortino_ratio": {
+          "type": "number",
+          "description": "Sortino Ratio"
+        },
+        "calmar_ratio": {
+          "type": "number",
+          "description": "Calmar Ratio"
+        },
+        "beta": {
+          "type": "number",
+          "description": "Beta"
+        },
+        "alpha": {
+          "type": "number",
+          "description": "Alpha"
+        },
+        "information_ratio": {
+          "type": "number",
+          "description": "Information Ratio"
+        },
+        "tracking_error": {
+          "type": "number",
+          "description": "Tracking Error"
+        },
+        "downside_deviation": {
+          "type": "number",
+          "description": "Downside Deviation"
+        },
+        "upside_potential": {
+          "type": "number",
+          "description": "Upside Potential"
+        },
+        "downside_risk": {
+          "type": "number",
+          "description": "Downside Risk"
+        },
+        "upside_capture": {
+          "type": "number",
+          "description": "Upside Capture"
+        },
+        "downside_capture": {
+          "type": "number",
+          "description": "Downside Capture"
+        }
+      }
+    },
+    "monte_carlo": {
+      "type": "object",
+      "description": "Monte Carlo simulation results",
+      "properties": {
+        "num_simulations": {
+          "type": "integer",
+          "description": "Number of simulations run"
+        },
+        "irr_distribution": {
+          "type": "object",
+          "description": "Distribution of IRR values",
+          "properties": {
+            "mean": {
+              "type": "number",
+              "description": "Mean IRR"
+            },
+            "median": {
+              "type": "number",
+              "description": "Median IRR"
+            },
+            "std": {
+              "type": "number",
+              "description": "Standard deviation of IRR"
+            },
+            "min": {
+              "type": "number",
+              "description": "Minimum IRR"
+            },
+            "max": {
+              "type": "number",
+              "description": "Maximum IRR"
+            },
+            "percentile_5": {
+              "type": "number",
+              "description": "5th percentile of IRR"
+            },
+            "percentile_25": {
+              "type": "number",
+              "description": "25th percentile of IRR"
+            },
+            "percentile_75": {
+              "type": "number",
+              "description": "75th percentile of IRR"
+            },
+            "percentile_95": {
+              "type": "number",
+              "description": "95th percentile of IRR"
+            }
+          }
+        },
+        "equity_multiple_distribution": {
+          "type": "object",
+          "description": "Distribution of equity multiple values",
+          "properties": {
+            "mean": {
+              "type": "number",
+              "description": "Mean equity multiple"
+            },
+            "median": {
+              "type": "number",
+              "description": "Median equity multiple"
+            },
+            "std": {
+              "type": "number",
+              "description": "Standard deviation of equity multiple"
+            },
+            "min": {
+              "type": "number",
+              "description": "Minimum equity multiple"
+            },
+            "max": {
+              "type": "number",
+              "description": "Maximum equity multiple"
+            },
+            "percentile_5": {
+              "type": "number",
+              "description": "5th percentile of equity multiple"
+            },
+            "percentile_25": {
+              "type": "number",
+              "description": "25th percentile of equity multiple"
+            },
+            "percentile_75": {
+              "type": "number",
+              "description": "75th percentile of equity multiple"
+            },
+            "percentile_95": {
+              "type": "number",
+              "description": "95th percentile of equity multiple"
+            }
+          }
+        }
+      }
+    },
+    "cashflows": {
+      "type": "array",
+      "description": "Cash flows over time",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number",
+            "description": "Year of the cash flow"
+          },
+          "inflow": {
+            "type": "number",
+            "description": "Cash inflow"
+          },
+          "outflow": {
+            "type": "number",
+            "description": "Cash outflow"
+          },
+          "net": {
+            "type": "number",
+            "description": "Net cash flow"
+          },
+          "cumulative": {
+            "type": "number",
+            "description": "Cumulative cash flow"
+          }
+        }
+      }
+    },
+    "exits": {
+      "type": "object",
+      "description": "Exit simulation results",
+      "properties": {
+        "exits": {
+          "type": "array",
+          "description": "List of exits",
+          "items": {
+            "type": "object",
+            "properties": {
+              "loan_id": {
+                "type": "string",
+                "description": "Loan ID"
+              },
+              "property_id": {
+                "type": "string",
+                "description": "Property ID"
+              },
+              "suburb_id": {
+                "type": "string",
+                "description": "Suburb ID"
+              },
+              "zone": {
+                "type": "string",
+                "description": "Zone name"
+              },
+              "loan_amount": {
+                "type": "number",
+                "description": "Loan amount"
+              },
+              "property_value": {
+                "type": "number",
+                "description": "Initial property value"
+              },
+              "current_value": {
+                "type": "number",
+                "description": "Current property value"
+              },
+              "appreciation": {
+                "type": "number",
+                "description": "Appreciation percentage"
+              },
+              "exit_month": {
+                "type": "integer",
+                "description": "Exit month (0-based)"
+              },
+              "exit_year": {
+                "type": "number",
+                "description": "Exit year"
+              },
+              "exit_type": {
+                "type": "string",
+                "description": "Exit type (sale, refinance, default, term_completion)"
+              },
+              "exit_value": {
+                "type": "number",
+                "description": "Exit value"
+              },
+              "appreciation_share_amount": {
+                "type": "number",
+                "description": "Appreciation share amount"
+              },
+              "total_return": {
+                "type": "number",
+                "description": "Total return"
+              },
+              "roi": {
+                "type": "number",
+                "description": "ROI"
+              },
+              "annualized_roi": {
+                "type": "number",
+                "description": "Annualized ROI"
+              }
+            }
+          }
+        },
+        "statistics": {
+          "type": "object",
+          "description": "Exit statistics",
+          "properties": {
+            "avg_exit_year": {
+              "type": "number",
+              "description": "Average exit year"
+            },
+            "avg_roi": {
+              "type": "number",
+              "description": "Average ROI"
+            },
+            "avg_annualized_roi": {
+              "type": "number",
+              "description": "Average annualized ROI"
+            },
+            "exit_type_distribution": {
+              "type": "object",
+              "description": "Exit type distribution",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "exit_timing_distribution": {
+              "type": "object",
+              "description": "Exit timing distribution",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "exit_roi_distribution": {
+              "type": "object",
+              "description": "Exit ROI distribution",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "exit_type_roi": {
+              "type": "object",
+              "description": "Exit type ROI",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "exit_value_total": {
+              "type": "number",
+              "description": "Total exit value"
+            },
+            "appreciation_share_total": {
+              "type": "number",
+              "description": "Total appreciation share"
+            },
+            "total_return": {
+              "type": "number",
+              "description": "Total return"
+            },
+            "total_roi": {
+              "type": "number",
+              "description": "Total ROI"
+            },
+            "annualized_roi": {
+              "type": "number",
+              "description": "Annualized ROI"
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Exit visualization",
+          "properties": {
+            "exit_timing_chart": {
+              "type": "array",
+              "description": "Exit timing distribution chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_type_chart": {
+              "type": "array",
+              "description": "Exit type distribution chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "cumulative_exits_chart": {
+              "type": "array",
+              "description": "Cumulative exits chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_roi_chart": {
+              "type": "array",
+              "description": "Exit ROI distribution chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_type_roi_chart": {
+              "type": "array",
+              "description": "Exit type ROI chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_summary": {
+              "type": "object",
+              "description": "Exit summary"
+            },
+            "exit_value_by_year_chart": {
+              "type": "array",
+              "description": "Exit value by year chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_count_by_year_chart": {
+              "type": "array",
+              "description": "Exit count by year chart",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "enhanced_exits": {
+      "type": "object",
+      "description": "Enhanced exit simulation results",
+      "properties": {
+        "exits": {
+          "type": "array",
+          "description": "List of enhanced exits",
+          "items": {
+            "type": "object",
+            "properties": {
+              "loan_id": {
+                "type": "string",
+                "description": "Loan ID"
+              },
+              "property_id": {
+                "type": "string",
+                "description": "Property ID"
+              },
+              "suburb_id": {
+                "type": "string",
+                "description": "Suburb ID"
+              },
+              "zone": {
+                "type": "string",
+                "description": "Zone name"
+              },
+              "loan_amount": {
+                "type": "number",
+                "description": "Loan amount"
+              },
+              "property_value": {
+                "type": "number",
+                "description": "Initial property value"
+              },
+              "current_value": {
+                "type": "number",
+                "description": "Current property value"
+              },
+              "appreciation": {
+                "type": "number",
+                "description": "Appreciation percentage"
+              },
+              "exit_month": {
+                "type": "integer",
+                "description": "Exit month (0-based)"
+              },
+              "exit_year": {
+                "type": "number",
+                "description": "Exit year"
+              },
+              "exit_type": {
+                "type": "string",
+                "description": "Exit type (sale, refinance, default, term_completion)"
+              },
+              "exit_value": {
+                "type": "number",
+                "description": "Exit value"
+              },
+              "appreciation_share_amount": {
+                "type": "number",
+                "description": "Appreciation share amount"
+              },
+              "total_return": {
+                "type": "number",
+                "description": "Total return"
+              },
+              "roi": {
+                "type": "number",
+                "description": "ROI"
+              },
+              "annualized_roi": {
+                "type": "number",
+                "description": "Annualized ROI"
+              },
+              "behavioral_adjustments": {
+                "type": "object",
+                "description": "Behavioral adjustments",
+                "additionalProperties": true
+              },
+              "economic_adjustments": {
+                "type": "object",
+                "description": "Economic adjustments",
+                "additionalProperties": true
+              },
+              "cluster": {
+                "type": "integer",
+                "description": "Cluster assignment"
+              },
+              "ml_predicted_exit_year": {
+                "type": "number",
+                "description": "ML-predicted exit year"
+              },
+              "ml_exit_year_error": {
+                "type": "number",
+                "description": "ML exit year prediction error"
+              },
+              "ml_exit_timing_anomaly": {
+                "type": "boolean",
+                "description": "Whether exit timing is an anomaly"
+              },
+              "ml_exit_type_probabilities": {
+                "type": "object",
+                "description": "ML exit type probabilities",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "ml_predicted_roi": {
+                "type": "number",
+                "description": "ML-predicted ROI"
+              },
+              "ml_roi_error": {
+                "type": "number",
+                "description": "ML ROI prediction error"
+              },
+              "ml_roi_anomaly": {
+                "type": "boolean",
+                "description": "Whether ROI is an anomaly"
+              }
+            }
+          }
+        },
+        "statistics": {
+          "type": "object",
+          "description": "Enhanced exit statistics",
+          "properties": {
+            "avg_exit_year": {
+              "type": "number",
+              "description": "Average exit year"
+            },
+            "avg_roi": {
+              "type": "number",
+              "description": "Average ROI"
+            },
+            "avg_annualized_roi": {
+              "type": "number",
+              "description": "Average annualized ROI"
+            },
+            "exit_type_distribution": {
+              "type": "object",
+              "description": "Exit type distribution",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "exit_timing_distribution": {
+              "type": "object",
+              "description": "Exit timing distribution",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "exit_roi_distribution": {
+              "type": "object",
+              "description": "Exit ROI distribution",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "exit_type_roi": {
+              "type": "object",
+              "description": "Exit type ROI",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "exit_value_total": {
+              "type": "number",
+              "description": "Total exit value"
+            },
+            "appreciation_share_total": {
+              "type": "number",
+              "description": "Total appreciation share"
+            },
+            "total_return": {
+              "type": "number",
+              "description": "Total return"
+            },
+            "total_roi": {
+              "type": "number",
+              "description": "Total ROI"
+            },
+            "annualized_roi": {
+              "type": "number",
+              "description": "Annualized ROI"
+            },
+            "comparison_to_base": {
+              "type": "object",
+              "description": "Comparison to base exit statistics",
+              "additionalProperties": true
+            },
+            "cohort_analysis": {
+              "type": "object",
+              "description": "Cohort analysis",
+              "additionalProperties": true
+            },
+            "cohort_analysis_summary": {
+              "type": "object",
+              "description": "Cohort analysis summary",
+              "additionalProperties": true
+            },
+            "risk_metrics": {
+              "type": "object",
+              "description": "Risk metrics",
+              "additionalProperties": true
+            },
+            "ml_insights": {
+              "type": "object",
+              "description": "Machine learning insights",
+              "additionalProperties": true
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Enhanced exit visualization",
+          "properties": {
+            "exit_timing_chart": {
+              "type": "array",
+              "description": "Exit timing distribution chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_type_chart": {
+              "type": "array",
+              "description": "Exit type distribution chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "cumulative_exits_chart": {
+              "type": "array",
+              "description": "Cumulative exits chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_roi_chart": {
+              "type": "array",
+              "description": "Exit ROI distribution chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_type_roi_chart": {
+              "type": "array",
+              "description": "Exit type ROI chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_summary": {
+              "type": "object",
+              "description": "Exit summary"
+            },
+            "exit_value_by_year_chart": {
+              "type": "array",
+              "description": "Exit value by year chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "exit_count_by_year_chart": {
+              "type": "array",
+              "description": "Exit count by year chart",
+              "items": {
+                "type": "object"
+              }
+            },
+            "cohort_visualizations": {
+              "type": "object",
+              "description": "Cohort analysis visualizations",
+              "additionalProperties": true
+            },
+            "risk_visualizations": {
+              "type": "object",
+              "description": "Risk metrics visualizations",
+              "additionalProperties": true
+            },
+            "ml_visualizations": {
+              "type": "object",
+              "description": "Machine learning visualizations",
+              "additionalProperties": true
+            },
+            "economic_visualizations": {
+              "type": "object",
+              "description": "Economic scenario visualizations",
+              "additionalProperties": true
+            },
+            "geospatial_visualizations": {
+              "type": "object",
+              "description": "Geospatial visualizations",
+              "additionalProperties": true
+            },
+            "comparative_visualizations": {
+              "type": "object",
+              "description": "Comparative visualizations",
+              "additionalProperties": true
+            }
+          }
+        },
+        "economic_scenario": {
+          "type": "object",
+          "description": "Economic scenario",
+          "additionalProperties": true
+        },
+        "behavioral_adjustments": {
+          "type": "object",
+          "description": "Behavioral adjustments",
+          "additionalProperties": true
+        },
+        "economic_adjustments": {
+          "type": "object",
+          "description": "Economic adjustments",
+          "additionalProperties": true
+        },
+        "ml_insights": {
+          "type": "object",
+          "description": "Machine learning insights",
+          "additionalProperties": true
+        }
+      }
+    },
+    "capital_allocation": {
+      "type": "object",
+      "description": "Capital allocation results",
+      "properties": {
+        "zone_targets": {
+          "type": "object",
+          "description": "Target zone allocations",
+          "properties": {
+            "green": {
+              "type": "number",
+              "description": "Green zone allocation (0-1)"
+            },
+            "orange": {
+              "type": "number",
+              "description": "Orange zone allocation (0-1)"
+            },
+            "red": {
+              "type": "number",
+              "description": "Red zone allocation (0-1)"
+            }
+          }
+        },
+        "allocation_history": {
+          "type": "array",
+          "description": "Allocation history over time",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "description": "Simulation year"
+              },
+              "targets": {
+                "type": "object",
+                "description": "Target zone allocations",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "actual": {
+                "type": "object",
+                "description": "Actual zone allocations",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "gap": {
+                "type": "object",
+                "description": "Allocation gaps",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "capital_by_zone": {
+                "type": "object",
+                "description": "Capital by zone",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "timestamp": {
+                "type": "number",
+                "description": "Timestamp when the allocation was recorded"
+              }
+            }
+          }
+        },
+        "allocation_history_visualization": {
+          "type": "object",
+          "description": "Visualization data for allocation history",
+          "properties": {
+            "target_history": {
+              "type": "object",
+              "description": "Target allocation history by zone",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Simulation year"
+                    },
+                    "allocation": {
+                      "type": "number",
+                      "description": "Allocation percentage"
+                    }
+                  }
+                }
+              }
+            },
+            "actual_history": {
+              "type": "object",
+              "description": "Actual allocation history by zone",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Simulation year"
+                    },
+                    "allocation": {
+                      "type": "number",
+                      "description": "Allocation percentage"
+                    }
+                  }
+                }
+              }
+            },
+            "gap_history": {
+              "type": "object",
+              "description": "Allocation gap history by zone",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Simulation year"
+                    },
+                    "gap": {
+                      "type": "number",
+                      "description": "Allocation gap percentage"
+                    }
+                  }
+                }
+              }
+            },
+            "drift_chart": {
+              "type": "array",
+              "description": "Allocation drift chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "zone": {
+                    "type": "string",
+                    "description": "Zone name"
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "year": {
+                          "type": "number",
+                          "description": "Simulation year"
+                        },
+                        "target": {
+                          "type": "number",
+                          "description": "Target allocation percentage"
+                        },
+                        "actual": {
+                          "type": "number",
+                          "description": "Actual allocation percentage"
+                        },
+                        "gap": {
+                          "type": "number",
+                          "description": "Allocation gap percentage"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "table": {
+              "type": "array",
+              "description": "Table data for allocation history",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        },
+        "zone_actual": {
+          "type": "object",
+          "description": "Actual zone allocations",
+          "properties": {
+            "green": {
+              "type": "number",
+              "description": "Green zone allocation (0-1)"
+            },
+            "orange": {
+              "type": "number",
+              "description": "Orange zone allocation (0-1)"
+            },
+            "red": {
+              "type": "number",
+              "description": "Red zone allocation (0-1)"
+            }
+          }
+        },
+        "capital_by_zone": {
+          "type": "object",
+          "description": "Capital allocated by zone",
+          "properties": {
+            "green": {
+              "type": "number",
+              "description": "Capital allocated to green zone"
+            },
+            "orange": {
+              "type": "number",
+              "description": "Capital allocated to orange zone"
+            },
+            "red": {
+              "type": "number",
+              "description": "Capital allocated to red zone"
+            }
+          }
+        },
+        "allocation_stats": {
+          "type": "object",
+          "description": "Allocation statistics",
+          "properties": {
+            "allocation_vs_distribution": {
+              "type": "object",
+              "description": "Allocation vs. distribution comparison"
+            },
+            "concentration": {
+              "type": "object",
+              "description": "Concentration metrics",
+              "properties": {
+                "herfindahl_index": {
+                  "type": "number",
+                  "description": "Herfindahl index for concentration"
+                },
+                "max_allocation": {
+                  "type": "number",
+                  "description": "Maximum allocation to any zone"
+                },
+                "min_allocation": {
+                  "type": "number",
+                  "description": "Minimum allocation to any zone"
+                },
+                "range": {
+                  "type": "number",
+                  "description": "Range of allocations"
+                }
+              }
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Visualization data for capital allocation",
+          "properties": {
+            "allocation_visualization": {
+              "type": "object",
+              "description": "Allocation visualization data",
+              "properties": {
+                "pie_chart": {
+                  "type": "array",
+                  "description": "Pie chart data for zone allocations",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      },
+                      "allocation": {
+                        "type": "number",
+                        "description": "Allocation percentage"
+                      }
+                    }
+                  }
+                },
+                "bar_chart": {
+                  "type": "array",
+                  "description": "Bar chart data for zone allocations",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      },
+                      "allocation": {
+                        "type": "number",
+                        "description": "Allocation percentage"
+                      }
+                    }
+                  }
+                },
+                "table": {
+                  "type": "array",
+                  "description": "Table data for zone allocations",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      },
+                      "allocation": {
+                        "type": "string",
+                        "description": "Allocation percentage"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "allocation_comparison": {
+              "type": "object",
+              "description": "Allocation comparison visualization data",
+              "properties": {
+                "comparison_chart": {
+                  "type": "array",
+                  "description": "Comparison chart data for target vs. actual allocations",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      },
+                      "target": {
+                        "type": "number",
+                        "description": "Target allocation percentage"
+                      },
+                      "actual": {
+                        "type": "number",
+                        "description": "Actual allocation percentage"
+                      }
+                    }
+                  }
+                },
+                "table": {
+                  "type": "array",
+                  "description": "Table data for target vs. actual allocations",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      },
+                      "target": {
+                        "type": "string",
+                        "description": "Target allocation percentage"
+                      },
+                      "actual": {
+                        "type": "string",
+                        "description": "Actual allocation percentage"
+                      },
+                      "difference": {
+                        "type": "string",
+                        "description": "Difference between target and actual"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tls_data": {
+      "type": "object",
+      "description": "TLS module data",
+      "properties": {
+        "zone_distribution": {
+          "type": "object",
+          "description": "Distribution of suburbs by zone",
+          "properties": {
+            "green": {
+              "type": "integer",
+              "description": "Number of suburbs in green zone"
+            },
+            "orange": {
+              "type": "integer",
+              "description": "Number of suburbs in orange zone"
+            },
+            "red": {
+              "type": "integer",
+              "description": "Number of suburbs in red zone"
+            },
+            "total": {
+              "type": "integer",
+              "description": "Total number of suburbs"
+            },
+            "green_percentage": {
+              "type": "number",
+              "description": "Percentage of suburbs in green zone"
+            },
+            "orange_percentage": {
+              "type": "number",
+              "description": "Percentage of suburbs in orange zone"
+            },
+            "red_percentage": {
+              "type": "number",
+              "description": "Percentage of suburbs in red zone"
+            }
+          }
+        },
+        "property_distribution": {
+          "type": "object",
+          "description": "Distribution of properties",
+          "properties": {
+            "total_properties": {
+              "type": "integer",
+              "description": "Total number of properties"
+            },
+            "property_types": {
+              "type": "object",
+              "description": "Distribution by property type",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "bedrooms": {
+              "type": "object",
+              "description": "Distribution by number of bedrooms",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "bathrooms": {
+              "type": "object",
+              "description": "Distribution by number of bathrooms",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "zone_distribution": {
+              "type": "object",
+              "description": "Distribution by zone",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "metric_correlations": {
+          "type": "object",
+          "description": "Correlations between metrics",
+          "properties": {
+            "metrics": {
+              "type": "array",
+              "description": "Metric names",
+              "items": {
+                "type": "string"
+              }
+            },
+            "matrix": {
+              "type": "array",
+              "description": "Correlation matrix",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            },
+            "strong_correlations": {
+              "type": "array",
+              "description": "Strong correlations",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "metric1": {
+                    "type": "string",
+                    "description": "First metric name"
+                  },
+                  "metric2": {
+                    "type": "string",
+                    "description": "Second metric name"
+                  },
+                  "correlation": {
+                    "type": "number",
+                    "description": "Correlation value"
+                  },
+                  "is_positive": {
+                    "type": "boolean",
+                    "description": "Whether the correlation is positive"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "loans": {
+      "type": "array",
+      "description": "Generated loans",
+      "items": {
+        "type": "object",
+        "properties": {
+          "loan_id": {
+            "type": "string",
+            "description": "Unique identifier for the loan"
+          },
+          "loan_size": {
+            "type": "number",
+            "description": "Loan size in dollars"
+          },
+          "ltv": {
+            "type": "number",
+            "description": "Loan-to-value ratio (0-1)"
+          },
+          "zone": {
+            "type": "string",
+            "description": "Zone category (green, orange, red)"
+          },
+          "term": {
+            "type": "number",
+            "description": "Loan term in years"
+          },
+          "interest_rate": {
+            "type": "number",
+            "description": "Interest rate (0-1)"
+          },
+          "origination_year": {
+            "type": "integer",
+            "description": "Year the loan was originated"
+          },
+          "property_value": {
+            "type": "number",
+            "description": "Property value in dollars"
+          },
+          "property_id": {
+            "type": "string",
+            "description": "Unique identifier for the property"
+          },
+          "suburb_id": {
+            "type": "string",
+            "description": "Unique identifier for the suburb"
+          },
+          "suburb_name": {
+            "type": "string",
+            "description": "Name of the suburb"
+          },
+          "property_type": {
+            "type": "string",
+            "description": "Type of property (house, apartment, etc.)"
+          },
+          "bedrooms": {
+            "type": "integer",
+            "description": "Number of bedrooms"
+          },
+          "bathrooms": {
+            "type": "integer",
+            "description": "Number of bathrooms"
+          },
+          "land_size": {
+            "type": "number",
+            "description": "Land size in square meters"
+          },
+          "building_size": {
+            "type": "number",
+            "description": "Building size in square meters"
+          },
+          "year_built": {
+            "type": "integer",
+            "description": "Year the property was built"
+          }
+        }
+      }
+    },
+    "price_paths": {
+      "type": "object",
+      "description": "Price path simulation results",
+      "properties": {
+        "zone_price_paths": {
+          "type": "object",
+          "description": "Price paths by zone",
+          "additionalProperties": {
+            "type": "array",
+            "description": "Price path for a zone",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "suburb_price_paths": {
+          "type": "object",
+          "description": "Price paths by suburb",
+          "additionalProperties": {
+            "type": "array",
+            "description": "Price path for a suburb",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "property_price_paths": {
+          "type": "object",
+          "description": "Price paths by property",
+          "additionalProperties": {
+            "type": "array",
+            "description": "Price path for a property",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Visualization data for price paths",
+          "properties": {
+            "zone_price_charts": {
+              "type": "object",
+              "description": "Price charts by zone",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Year"
+                    },
+                    "price_index": {
+                      "type": "number",
+                      "description": "Price index"
+                    }
+                  }
+                }
+              }
+            },
+            "zone_comparison_chart": {
+              "type": "array",
+              "description": "Comparison chart for all zones",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "green": {
+                    "type": "number",
+                    "description": "Green zone price index"
+                  },
+                  "orange": {
+                    "type": "number",
+                    "description": "Orange zone price index"
+                  },
+                  "red": {
+                    "type": "number",
+                    "description": "Red zone price index"
+                  }
+                }
+              }
+            },
+            "suburb_price_charts": {
+              "type": "object",
+              "description": "Price charts by suburb",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Year"
+                    },
+                    "price_index": {
+                      "type": "number",
+                      "description": "Price index"
+                    }
+                  }
+                }
+              }
+            },
+            "correlation_heatmap": {
+              "type": "array",
+              "description": "Correlation heatmap data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "zone1": {
+                    "type": "string",
+                    "description": "First zone"
+                  },
+                  "zone2": {
+                    "type": "string",
+                    "description": "Second zone"
+                  },
+                  "correlation": {
+                    "type": "number",
+                    "description": "Correlation coefficient"
+                  }
+                }
+              }
+            },
+            "final_distribution": {
+              "type": "object",
+              "description": "Distribution of final property values",
+              "properties": {
+                "green": {
+                  "type": "array",
+                  "description": "Histogram data for green zone",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bin": {
+                        "type": "string",
+                        "description": "Bin range"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "description": "Count of properties in bin"
+                      }
+                    }
+                  }
+                },
+                "orange": {
+                  "type": "array",
+                  "description": "Histogram data for orange zone",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bin": {
+                        "type": "string",
+                        "description": "Bin range"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "description": "Count of properties in bin"
+                      }
+                    }
+                  }
+                },
+                "red": {
+                  "type": "array",
+                  "description": "Histogram data for red zone",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bin": {
+                        "type": "string",
+                        "description": "Bin range"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "description": "Count of properties in bin"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cycle_position_chart": {
+              "type": "array",
+              "description": "Property cycle position over time",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "cycle_position": {
+                    "type": "number",
+                    "description": "Position in property cycle (0-1)"
+                  }
+                }
+              }
+            },
+            "regime_chart": {
+              "type": "array",
+              "description": "Market regime over time (for regime switching model)",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "regime": {
+                    "type": "string",
+                    "description": "Market regime (bull/bear)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "statistics": {
+          "type": "object",
+          "description": "Statistics for price paths",
+          "properties": {
+            "zone_stats": {
+              "type": "object",
+              "description": "Statistics by zone",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "cagr": {
+                    "type": "number",
+                    "description": "Compound annual growth rate"
+                  },
+                  "volatility": {
+                    "type": "number",
+                    "description": "Annualized volatility"
+                  },
+                  "max_drawdown": {
+                    "type": "number",
+                    "description": "Maximum drawdown"
+                  },
+                  "sharpe_ratio": {
+                    "type": "number",
+                    "description": "Sharpe ratio"
+                  },
+                  "final_appreciation": {
+                    "type": "number",
+                    "description": "Total appreciation over the simulation period"
+                  }
+                }
+              }
+            },
+            "suburb_stats": {
+              "type": "object",
+              "description": "Statistics by suburb",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "cagr": {
+                    "type": "number",
+                    "description": "Compound annual growth rate"
+                  },
+                  "volatility": {
+                    "type": "number",
+                    "description": "Annualized volatility"
+                  },
+                  "max_drawdown": {
+                    "type": "number",
+                    "description": "Maximum drawdown"
+                  }
+                }
+              }
+            },
+            "correlation_matrix": {
+              "type": "object",
+              "description": "Correlation matrix between zones",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "loan_portfolio": {
+      "type": "object",
+      "description": "Loan portfolio statistics and visualization data",
+      "properties": {
+        "loan_portfolio_history": {
+          "type": "array",
+          "description": "Loan portfolio history over time",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "description": "Simulation year"
+              },
+              "num_loans": {
+                "type": "integer",
+                "description": "Number of loans"
+              },
+              "total_loan_amount": {
+                "type": "number",
+                "description": "Total loan amount"
+              },
+              "avg_loan_size": {
+                "type": "number",
+                "description": "Average loan size"
+              },
+              "avg_ltv": {
+                "type": "number",
+                "description": "Average LTV ratio"
+              },
+              "zone_counts": {
+                "type": "object",
+                "description": "Loan counts by zone",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              },
+              "zone_amounts": {
+                "type": "object",
+                "description": "Loan amounts by zone",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "zone_percentages": {
+                "type": "object",
+                "description": "Loan percentage by zone",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "zone_amount_percentages": {
+                "type": "object",
+                "description": "Loan amount percentage by zone",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "timestamp": {
+                "type": "number",
+                "description": "Timestamp when the portfolio was recorded"
+              }
+            }
+          }
+        },
+        "loan_portfolio_history_visualization": {
+          "type": "object",
+          "description": "Visualization data for loan portfolio history",
+          "properties": {
+            "loan_count_history": {
+              "type": "array",
+              "description": "Loan count history",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "count": {
+                    "type": "integer",
+                    "description": "Number of loans"
+                  }
+                }
+              }
+            },
+            "loan_amount_history": {
+              "type": "array",
+              "description": "Loan amount history",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "description": "Total loan amount"
+                  }
+                }
+              }
+            },
+            "zone_count_history": {
+              "type": "object",
+              "description": "Zone count history",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Simulation year"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of loans"
+                    }
+                  }
+                }
+              }
+            },
+            "zone_amount_history": {
+              "type": "object",
+              "description": "Zone amount history",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Simulation year"
+                    },
+                    "amount": {
+                      "type": "number",
+                      "description": "Total loan amount"
+                    }
+                  }
+                }
+              }
+            },
+            "zone_percentage_history": {
+              "type": "object",
+              "description": "Zone percentage history",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Simulation year"
+                    },
+                    "percentage": {
+                      "type": "number",
+                      "description": "Percentage of loans"
+                    }
+                  }
+                }
+              }
+            },
+            "turnover_data": {
+              "type": "array",
+              "description": "Portfolio turnover data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "new_loans": {
+                    "type": "integer",
+                    "description": "Number of new loans"
+                  },
+                  "turnover_percentage": {
+                    "type": "number",
+                    "description": "Turnover percentage"
+                  }
+                }
+              }
+            },
+            "table": {
+              "type": "array",
+              "description": "Table data for loan portfolio history",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "num_loans": {
+                    "type": "integer",
+                    "description": "Number of loans"
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        },
+        "stats": {
+          "type": "object",
+          "description": "Loan portfolio statistics",
+          "properties": {
+            "overall": {
+              "type": "object",
+              "description": "Overall portfolio statistics",
+              "properties": {
+                "num_loans": {
+                  "type": "integer",
+                  "description": "Number of loans"
+                },
+                "total_loan_amount": {
+                  "type": "number",
+                  "description": "Total loan amount"
+                },
+                "avg_loan_size": {
+                  "type": "number",
+                  "description": "Average loan size"
+                },
+                "avg_ltv": {
+                  "type": "number",
+                  "description": "Average LTV ratio"
+                },
+                "avg_term": {
+                  "type": "number",
+                  "description": "Average loan term"
+                },
+                "avg_interest_rate": {
+                  "type": "number",
+                  "description": "Average interest rate"
+                }
+              }
+            },
+            "by_zone": {
+              "type": "object",
+              "description": "Statistics by zone",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "count": {
+                    "type": "integer",
+                    "description": "Number of loans in the zone"
+                  },
+                  "total_amount": {
+                    "type": "number",
+                    "description": "Total loan amount in the zone"
+                  },
+                  "percentage_of_loans": {
+                    "type": "number",
+                    "description": "Percentage of loans in the zone"
+                  },
+                  "percentage_of_amount": {
+                    "type": "number",
+                    "description": "Percentage of loan amount in the zone"
+                  },
+                  "avg_loan_size": {
+                    "type": "number",
+                    "description": "Average loan size in the zone"
+                  },
+                  "min_loan_size": {
+                    "type": "number",
+                    "description": "Minimum loan size in the zone"
+                  },
+                  "max_loan_size": {
+                    "type": "number",
+                    "description": "Maximum loan size in the zone"
+                  },
+                  "std_dev_loan_size": {
+                    "type": "number",
+                    "description": "Standard deviation of loan sizes in the zone"
+                  },
+                  "avg_ltv": {
+                    "type": "number",
+                    "description": "Average LTV ratio in the zone"
+                  },
+                  "min_ltv": {
+                    "type": "number",
+                    "description": "Minimum LTV ratio in the zone"
+                  },
+                  "max_ltv": {
+                    "type": "number",
+                    "description": "Maximum LTV ratio in the zone"
+                  },
+                  "std_dev_ltv": {
+                    "type": "number",
+                    "description": "Standard deviation of LTV ratios in the zone"
+                  },
+                  "avg_term": {
+                    "type": "number",
+                    "description": "Average loan term in the zone"
+                  },
+                  "min_term": {
+                    "type": "number",
+                    "description": "Minimum loan term in the zone"
+                  },
+                  "max_term": {
+                    "type": "number",
+                    "description": "Maximum loan term in the zone"
+                  },
+                  "std_dev_term": {
+                    "type": "number",
+                    "description": "Standard deviation of loan terms in the zone"
+                  },
+                  "avg_interest_rate": {
+                    "type": "number",
+                    "description": "Average interest rate in the zone"
+                  },
+                  "min_interest_rate": {
+                    "type": "number",
+                    "description": "Minimum interest rate in the zone"
+                  },
+                  "max_interest_rate": {
+                    "type": "number",
+                    "description": "Maximum interest rate in the zone"
+                  },
+                  "std_dev_interest_rate": {
+                    "type": "number",
+                    "description": "Standard deviation of interest rates in the zone"
+                  }
+                }
+              }
+            },
+            "property_stats": {
+              "type": "object",
+              "description": "Property statistics",
+              "properties": {
+                "property_types": {
+                  "type": "object",
+                  "description": "Distribution of property types",
+                  "additionalProperties": {
+                    "type": "integer"
+                  }
+                },
+                "bedroom_counts": {
+                  "type": "object",
+                  "description": "Distribution of bedroom counts",
+                  "additionalProperties": {
+                    "type": "integer"
+                  }
+                },
+                "bathroom_counts": {
+                  "type": "object",
+                  "description": "Distribution of bathroom counts",
+                  "additionalProperties": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Loan portfolio visualization data",
+          "properties": {
+            "pie_charts": {
+              "type": "object",
+              "description": "Pie chart data",
+              "properties": {
+                "loan_counts_by_zone": {
+                  "type": "array",
+                  "description": "Loan counts by zone",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "description": "Number of loans"
+                      }
+                    }
+                  }
+                },
+                "loan_amounts_by_zone": {
+                  "type": "array",
+                  "description": "Loan amounts by zone",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      },
+                      "amount": {
+                        "type": "number",
+                        "description": "Total loan amount"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "histograms": {
+              "type": "object",
+              "description": "Histogram data",
+              "properties": {
+                "loan_sizes": {
+                  "type": "array",
+                  "description": "Loan size distribution",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bin": {
+                        "type": "string",
+                        "description": "Bin range"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "description": "Number of loans in the bin"
+                      }
+                    }
+                  }
+                },
+                "ltv_ratios": {
+                  "type": "array",
+                  "description": "LTV ratio distribution",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bin": {
+                        "type": "string",
+                        "description": "Bin range"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "description": "Number of loans in the bin"
+                      }
+                    }
+                  }
+                },
+                "loan_terms": {
+                  "type": "array",
+                  "description": "Loan term distribution",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bin": {
+                        "type": "string",
+                        "description": "Bin range"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "description": "Number of loans in the bin"
+                      }
+                    }
+                  }
+                },
+                "interest_rates": {
+                  "type": "array",
+                  "description": "Interest rate distribution",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bin": {
+                        "type": "string",
+                        "description": "Bin range"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "description": "Number of loans in the bin"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "scatter_plots": {
+              "type": "object",
+              "description": "Scatter plot data",
+              "properties": {
+                "loan_size_vs_ltv": {
+                  "type": "array",
+                  "description": "Loan size vs. LTV ratio",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "loan_size": {
+                        "type": "number",
+                        "description": "Loan size"
+                      },
+                      "ltv": {
+                        "type": "number",
+                        "description": "LTV ratio"
+                      },
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      }
+                    }
+                  }
+                },
+                "loan_size_vs_term": {
+                  "type": "array",
+                  "description": "Loan size vs. term",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "loan_size": {
+                        "type": "number",
+                        "description": "Loan size"
+                      },
+                      "term": {
+                        "type": "number",
+                        "description": "Loan term"
+                      },
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "tables": {
+              "type": "object",
+              "description": "Table data",
+              "properties": {
+                "loans_by_zone": {
+                  "type": "array",
+                  "description": "Loans by zone",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "zone": {
+                        "type": "string",
+                        "description": "Zone name"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "description": "Number of loans"
+                      },
+                      "total_amount": {
+                        "type": "number",
+                        "description": "Total loan amount"
+                      },
+                      "avg_loan_size": {
+                        "type": "number",
+                        "description": "Average loan size"
+                      },
+                      "avg_ltv": {
+                        "type": "number",
+                        "description": "Average LTV ratio"
+                      },
+                      "avg_term": {
+                        "type": "number",
+                        "description": "Average loan term"
+                      },
+                      "avg_interest_rate": {
+                        "type": "number",
+                        "description": "Average interest rate"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "reinvestment": {
+      "type": "object",
+      "description": "Reinvestment engine results",
+      "properties": {
+        "reinvestment_events": {
+          "type": "array",
+          "description": "List of reinvestment events",
+          "items": {
+            "type": "object",
+            "properties": {
+              "event_id": {
+                "type": "string",
+                "description": "Unique identifier for the reinvestment event"
+              },
+              "timestamp": {
+                "type": "number",
+                "description": "Timestamp of the reinvestment event"
+              },
+              "year": {
+                "type": "number",
+                "description": "Simulation year of the reinvestment event"
+              },
+              "month": {
+                "type": "integer",
+                "description": "Month of the reinvestment event (1-12)"
+              },
+              "amount": {
+                "type": "number",
+                "description": "Amount reinvested"
+              },
+              "source": {
+                "type": "string",
+                "description": "Source of the reinvestment capital (e.g., 'exit', 'cash_reserve')"
+              },
+              "source_details": {
+                "type": "object",
+                "description": "Details about the source of the reinvestment capital",
+                "additionalProperties": true
+              },
+              "strategy_used": {
+                "type": "string",
+                "description": "Reinvestment strategy used"
+              },
+              "target_allocations": {
+                "type": "object",
+                "description": "Target zone allocations for reinvestment",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "actual_allocations": {
+                "type": "object",
+                "description": "Actual zone allocations achieved",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "num_loans_generated": {
+                "type": "integer",
+                "description": "Number of loans generated for reinvestment"
+              },
+              "loan_ids": {
+                "type": "array",
+                "description": "IDs of loans generated for reinvestment",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "performance_adjustments": {
+                "type": "object",
+                "description": "Performance-based adjustments to allocations",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "cash_reserve_before": {
+                "type": "number",
+                "description": "Cash reserve before reinvestment"
+              },
+              "cash_reserve_after": {
+                "type": "number",
+                "description": "Cash reserve after reinvestment"
+              }
+            }
+          }
+        },
+        "reinvestment_summary": {
+          "type": "object",
+          "description": "Summary of reinvestment activity",
+          "properties": {
+            "total_reinvested": {
+              "type": "number",
+              "description": "Total amount reinvested"
+            },
+            "num_reinvestment_events": {
+              "type": "integer",
+              "description": "Number of reinvestment events"
+            },
+            "avg_reinvestment_amount": {
+              "type": "number",
+              "description": "Average reinvestment amount"
+            },
+            "reinvestment_by_year": {
+              "type": "object",
+              "description": "Reinvestment amounts by year",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "reinvestment_by_zone": {
+              "type": "object",
+              "description": "Reinvestment amounts by zone",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "reinvestment_by_strategy": {
+              "type": "object",
+              "description": "Reinvestment amounts by strategy",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "reinvestment_by_source": {
+              "type": "object",
+              "description": "Reinvestment amounts by source",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "cash_reserve_history": {
+              "type": "array",
+              "description": "Cash reserve history",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "month": {
+                    "type": "integer",
+                    "description": "Month (1-12)"
+                  },
+                  "cash_reserve": {
+                    "type": "number",
+                    "description": "Cash reserve amount"
+                  },
+                  "cash_reserve_percentage": {
+                    "type": "number",
+                    "description": "Cash reserve as percentage of fund size"
+                  }
+                }
+              }
+            },
+            "reinvestment_performance": {
+              "type": "object",
+              "description": "Performance metrics for reinvested capital",
+              "properties": {
+                "roi": {
+                  "type": "number",
+                  "description": "Return on investment for reinvested capital"
+                },
+                "annualized_roi": {
+                  "type": "number",
+                  "description": "Annualized ROI for reinvested capital"
+                },
+                "avg_hold_period": {
+                  "type": "number",
+                  "description": "Average hold period for reinvested loans"
+                },
+                "exit_distribution": {
+                  "type": "object",
+                  "description": "Exit type distribution for reinvested loans",
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Visualization data for reinvestment activity",
+          "properties": {
+            "reinvestment_timeline": {
+              "type": "array",
+              "description": "Timeline of reinvestment events",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "month": {
+                    "type": "integer",
+                    "description": "Month (1-12)"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "description": "Reinvestment amount"
+                  },
+                  "cumulative_amount": {
+                    "type": "number",
+                    "description": "Cumulative reinvestment amount"
+                  }
+                }
+              }
+            },
+            "reinvestment_by_zone_chart": {
+              "type": "array",
+              "description": "Reinvestment by zone chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "zone": {
+                    "type": "string",
+                    "description": "Zone name"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "description": "Reinvestment amount"
+                  },
+                  "percentage": {
+                    "type": "number",
+                    "description": "Percentage of total reinvestment"
+                  }
+                }
+              }
+            },
+            "reinvestment_by_year_chart": {
+              "type": "array",
+              "description": "Reinvestment by year chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "description": "Reinvestment amount"
+                  },
+                  "num_events": {
+                    "type": "integer",
+                    "description": "Number of reinvestment events"
+                  }
+                }
+              }
+            },
+            "cash_reserve_chart": {
+              "type": "array",
+              "description": "Cash reserve chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "month": {
+                    "type": "integer",
+                    "description": "Month (1-12)"
+                  },
+                  "cash_reserve": {
+                    "type": "number",
+                    "description": "Cash reserve amount"
+                  },
+                  "target": {
+                    "type": "number",
+                    "description": "Target cash reserve amount"
+                  },
+                  "min": {
+                    "type": "number",
+                    "description": "Minimum cash reserve amount"
+                  },
+                  "max": {
+                    "type": "number",
+                    "description": "Maximum cash reserve amount"
+                  }
+                }
+              }
+            },
+            "allocation_comparison_chart": {
+              "type": "array",
+              "description": "Target vs. actual allocation comparison chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "string",
+                    "description": "Reinvestment event ID"
+                  },
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "zone": {
+                    "type": "string",
+                    "description": "Zone name"
+                  },
+                  "target": {
+                    "type": "number",
+                    "description": "Target allocation percentage"
+                  },
+                  "actual": {
+                    "type": "number",
+                    "description": "Actual allocation percentage"
+                  },
+                  "gap": {
+                    "type": "number",
+                    "description": "Gap between target and actual"
+                  }
+                }
+              }
+            },
+            "reinvestment_performance_chart": {
+              "type": "array",
+              "description": "Reinvestment performance chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "roi": {
+                    "type": "number",
+                    "description": "ROI for reinvestments in that year"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "description": "Reinvestment amount"
+                  }
+                }
+              }
+            },
+            "tables": {
+              "type": "object",
+              "description": "Table data for reinvestment",
+              "properties": {
+                "reinvestment_summary_table": {
+                  "type": "array",
+                  "description": "Reinvestment summary table",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "year": {
+                        "type": "number",
+                        "description": "Simulation year"
+                      },
+                      "amount": {
+                        "type": "number",
+                        "description": "Reinvestment amount"
+                      },
+                      "num_events": {
+                        "type": "integer",
+                        "description": "Number of reinvestment events"
+                      },
+                      "num_loans": {
+                        "type": "integer",
+                        "description": "Number of loans generated"
+                      },
+                      "avg_loan_size": {
+                        "type": "number",
+                        "description": "Average loan size"
+                      },
+                      "zone_distribution": {
+                        "type": "object",
+                        "description": "Zone distribution",
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                },
+                "reinvestment_events_table": {
+                  "type": "array",
+                  "description": "Reinvestment events table",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "event_id": {
+                        "type": "string",
+                        "description": "Reinvestment event ID"
+                      },
+                      "year": {
+                        "type": "number",
+                        "description": "Simulation year"
+                      },
+                      "month": {
+                        "type": "integer",
+                        "description": "Month (1-12)"
+                      },
+                      "amount": {
+                        "type": "number",
+                        "description": "Reinvestment amount"
+                      },
+                      "strategy": {
+                        "type": "string",
+                        "description": "Reinvestment strategy"
+                      },
+                      "num_loans": {
+                        "type": "integer",
+                        "description": "Number of loans generated"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["simulation_id", "run_timestamp", "config", "metrics", "tls_data", "capital_allocation", "loans", "loan_portfolio"],
+  "additionalProperties": true
+}

@@ -1,0 +1,43 @@
+# EQU IHOME SIM ENGINE v2 Code Owners
+
+# Default owners for everything in the repo
+* @equihomepartners
+
+# Config module
+/src/config/ @equihomepartners
+
+# Engine module
+/src/engine/ @equihomepartners
+
+# Monte Carlo module
+/src/monte_carlo/ @equihomepartners
+
+# Risk module
+/src/risk/ @equihomepartners
+
+# Persistence module
+/src/persistence/ @equihomepartners
+
+# API module
+/src/api/ @equihomepartners
+
+# SDK module
+/src/sdk/ @equihomepartners
+
+# Utils module
+/src/utils/ @equihomepartners
+
+# Schemas
+/schemas/ @equihomepartners
+
+# Tests
+/tests/ @equihomepartners
+
+# Documentation
+/docs/ @equihomepartners
+
+# CI/CD
+/ci/ @equihomepartners
+
+# Infrastructure
+/infra/ @equihomepartners
