@@ -8,7 +8,9 @@ import logging
 from typing import Dict, Any, List, Optional, Tuple
 
 from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
+import os
 
 from src.engine.simulation_context import SimulationContext
 from src.tls_module import get_tls_manager
@@ -157,7 +159,7 @@ async def get_zone_distribution(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get zone distribution
@@ -197,7 +199,7 @@ async def get_metrics(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get metrics
@@ -251,7 +253,7 @@ async def get_metric_distribution(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get metric
@@ -392,7 +394,7 @@ async def get_suburbs(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get suburbs
@@ -463,7 +465,7 @@ async def get_suburb(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get suburb
@@ -520,7 +522,7 @@ async def get_property_distribution(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get property type distribution
@@ -579,7 +581,7 @@ async def get_zone_map(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get zone map data
@@ -606,7 +608,7 @@ async def get_metric_correlations(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get metrics
@@ -647,4 +649,38 @@ async def get_metric_correlations(
 
     except Exception as e:
         logger.error("Failed to get metric correlations", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/data")
+async def get_raw_data():
+    """
+    Serve the raw TLS data file.
+
+    Returns:
+        Raw TLS data file as JSON
+    """
+    try:
+        # Path to the TLS data file
+        data_file_path = os.path.join(os.getcwd(), "src", "tls_module", "data", "sydney_suburbs_data.json")
+
+        # Check if file exists
+        if not os.path.exists(data_file_path):
+            raise HTTPException(
+                status_code=404,
+                detail="TLS data file not found"
+            )
+
+        # Return the file
+        return FileResponse(
+            path=data_file_path,
+            media_type="application/json",
+            filename="sydney_suburbs_data.json"
+        )
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        logger.error("Failed to serve TLS data file", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))

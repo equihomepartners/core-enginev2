@@ -123,10 +123,14 @@ async def simulate_enhanced_exits(context: SimulationContext) -> None:
         # Get enhanced exit simulator configuration
         enhanced_exit_config = getattr(config, "enhanced_exit_simulator", {})
 
-        # Merge with default parameters
-        for param, default_value in ENHANCED_DEFAULT_PARAMS.items():
-            if not hasattr(enhanced_exit_config, param):
-                setattr(enhanced_exit_config, param, default_value)
+        # If enhanced_exit_config is empty or not a dict, create a new dict with defaults
+        if not enhanced_exit_config or not isinstance(enhanced_exit_config, dict):
+            enhanced_exit_config = ENHANCED_DEFAULT_PARAMS.copy()
+        else:
+            # Merge with default parameters
+            for param, default_value in ENHANCED_DEFAULT_PARAMS.items():
+                if param not in enhanced_exit_config:
+                    enhanced_exit_config[param] = default_value
 
         # Apply behavioral models to adjust exits
         enhanced_exits = apply_behavioral_models(
@@ -159,7 +163,7 @@ async def simulate_enhanced_exits(context: SimulationContext) -> None:
         )
 
         # Apply machine learning models if enabled
-        if enhanced_exit_config.use_ml_models:
+        if enhanced_exit_config.get("use_ml_models", True):
             enhanced_exits = apply_ml_models(
                 exits=enhanced_exits,
                 context=context,
@@ -279,11 +283,21 @@ def apply_behavioral_models(
     # Get random number generator
     rng = context.rng or get_rng("enhanced_exit_simulator", 0)
 
-    # Get parameters
-    refinance_interest_rate_sensitivity = getattr(config, "refinance_interest_rate_sensitivity", 2.0)
-    sale_appreciation_sensitivity = getattr(config, "sale_appreciation_sensitivity", 1.5)
-    life_event_probability = getattr(config, "life_event_probability", 0.05)
-    behavioral_correlation = getattr(config, "behavioral_correlation", 0.3)
+    # Get parameters from enhanced_exit_simulator config section
+    enhanced_config = getattr(config, "enhanced_exit_simulator", {})
+
+    # Use safe attribute access for nested config
+    if hasattr(enhanced_config, 'dict'):
+        enhanced_config_dict = enhanced_config.dict()
+    elif isinstance(enhanced_config, dict):
+        enhanced_config_dict = enhanced_config
+    else:
+        enhanced_config_dict = {}
+
+    refinance_interest_rate_sensitivity = enhanced_config_dict.get("refinance_interest_rate_sensitivity", 2.0)
+    sale_appreciation_sensitivity = enhanced_config_dict.get("sale_appreciation_sensitivity", 1.5)
+    life_event_probability = enhanced_config_dict.get("life_event_probability", 0.05)
+    behavioral_correlation = enhanced_config_dict.get("behavioral_correlation", 0.3)
 
     # Get price paths
     price_paths = getattr(context, "price_paths", {})
@@ -460,7 +474,10 @@ def apply_behavioral_models(
             adjusted_exit["roi"] = (exit_value + appreciation_share_amount - loan_amount) / loan_amount if loan_amount > 0 else 0.0
 
             # Recalculate annualized ROI
-            adjusted_exit["annualized_roi"] = ((exit_value + appreciation_share_amount) / loan_amount) ** (1 / adjusted_exit_year) - 1 if adjusted_exit_year > 0 else 0.0
+            if adjusted_exit_year > 0 and loan_amount > 0:
+                adjusted_exit["annualized_roi"] = ((exit_value + appreciation_share_amount) / loan_amount) ** (1 / adjusted_exit_year) - 1
+            else:
+                adjusted_exit["annualized_roi"] = 0.0
 
         # Add to adjusted exits
         adjusted_exits.append(adjusted_exit)
@@ -505,13 +522,23 @@ def apply_economic_models(
     # Get random number generator
     rng = context.rng or get_rng("enhanced_exit_simulator", 0)
 
-    # Get parameters
-    recession_default_multiplier = getattr(config, "recession_default_multiplier", 2.5)
-    inflation_refinance_multiplier = getattr(config, "inflation_refinance_multiplier", 1.8)
-    employment_sensitivity = getattr(config, "employment_sensitivity", 1.2)
-    migration_sensitivity = getattr(config, "migration_sensitivity", 0.8)
-    regulatory_compliance_cost = getattr(config, "regulatory_compliance_cost", 0.01)
-    tax_efficiency_factor = getattr(config, "tax_efficiency_factor", 0.9)
+    # Get parameters from enhanced_exit_simulator config section
+    enhanced_config = getattr(config, "enhanced_exit_simulator", {})
+
+    # Use safe attribute access for nested config
+    if hasattr(enhanced_config, 'dict'):
+        enhanced_config_dict = enhanced_config.dict()
+    elif isinstance(enhanced_config, dict):
+        enhanced_config_dict = enhanced_config
+    else:
+        enhanced_config_dict = {}
+
+    recession_default_multiplier = enhanced_config_dict.get("recession_default_multiplier", 2.5)
+    inflation_refinance_multiplier = enhanced_config_dict.get("inflation_refinance_multiplier", 1.8)
+    employment_sensitivity = enhanced_config_dict.get("employment_sensitivity", 1.2)
+    migration_sensitivity = enhanced_config_dict.get("migration_sensitivity", 0.8)
+    regulatory_compliance_cost = enhanced_config_dict.get("regulatory_compliance_cost", 0.01)
+    tax_efficiency_factor = enhanced_config_dict.get("tax_efficiency_factor", 0.9)
 
     # Get price paths
     price_paths = getattr(context, "price_paths", {})
@@ -791,7 +818,10 @@ def apply_economic_models(
             adjusted_exit["roi"] = (exit_value + appreciation_share_amount - loan_amount) / loan_amount if loan_amount > 0 else 0.0
 
             # Recalculate annualized ROI
-            adjusted_exit["annualized_roi"] = ((exit_value + appreciation_share_amount) / loan_amount) ** (1 / adjusted_exit_year) - 1 if adjusted_exit_year > 0 else 0.0
+            if adjusted_exit_year > 0 and loan_amount > 0:
+                adjusted_exit["annualized_roi"] = ((exit_value + appreciation_share_amount) / loan_amount) ** (1 / adjusted_exit_year) - 1
+            else:
+                adjusted_exit["annualized_roi"] = 0.0
 
         # Add to adjusted exits
         adjusted_exits.append(adjusted_exit)
@@ -838,9 +868,19 @@ def apply_ml_models(
     # Get random number generator
     rng = context.rng or get_rng("enhanced_exit_simulator", 0)
 
-    # Get parameters
-    feature_importance_threshold = getattr(config, "feature_importance_threshold", 0.05)
-    anomaly_detection_threshold = getattr(config, "anomaly_detection_threshold", 3.0)
+    # Get parameters from enhanced_exit_simulator config section
+    enhanced_config = getattr(config, "enhanced_exit_simulator", {})
+
+    # Use safe attribute access for nested config
+    if hasattr(enhanced_config, 'dict'):
+        enhanced_config_dict = enhanced_config.dict()
+    elif isinstance(enhanced_config, dict):
+        enhanced_config_dict = enhanced_config
+    else:
+        enhanced_config_dict = {}
+
+    feature_importance_threshold = enhanced_config_dict.get("feature_importance_threshold", 0.05)
+    anomaly_detection_threshold = enhanced_config_dict.get("anomaly_detection_threshold", 3.0)
 
     # Get loans
     loans = context.loans
@@ -1184,13 +1224,23 @@ def calculate_enhanced_exit_statistics(
     """
     logger.info("Calculating enhanced exit statistics")
 
-    # Get parameters
-    vintage_segmentation = getattr(config, "vintage_segmentation", True)
-    ltv_segmentation = getattr(config, "ltv_segmentation", True)
-    zone_segmentation = getattr(config, "zone_segmentation", True)
-    var_confidence_level = getattr(config, "var_confidence_level", 0.95)
-    stress_test_severity = getattr(config, "stress_test_severity", 0.3)
-    tail_risk_threshold = getattr(config, "tail_risk_threshold", 0.05)
+    # Get parameters from enhanced_exit_simulator config section
+    enhanced_config = getattr(config, "enhanced_exit_simulator", {})
+
+    # Use safe attribute access for nested config
+    if hasattr(enhanced_config, 'dict'):
+        enhanced_config_dict = enhanced_config.dict()
+    elif isinstance(enhanced_config, dict):
+        enhanced_config_dict = enhanced_config
+    else:
+        enhanced_config_dict = {}
+
+    vintage_segmentation = enhanced_config_dict.get("vintage_segmentation", True)
+    ltv_segmentation = enhanced_config_dict.get("ltv_segmentation", True)
+    zone_segmentation = enhanced_config_dict.get("zone_segmentation", True)
+    var_confidence_level = enhanced_config_dict.get("var_confidence_level", 0.95)
+    stress_test_severity = enhanced_config_dict.get("stress_test_severity", 0.3)
+    tail_risk_threshold = enhanced_config_dict.get("tail_risk_threshold", 0.05)
 
     # Calculate base statistics
     base_stats = calculate_exit_statistics(

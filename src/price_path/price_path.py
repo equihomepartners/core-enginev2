@@ -61,13 +61,33 @@ async def simulate_price_paths(context: SimulationContext) -> None:
             context.rng = get_rng("price_path", 0)
 
         # Get zone-specific appreciation rates
-        appreciation_rates = getattr(config, "appreciation_rates", {})
-        if not appreciation_rates:
+        logger.info("DEBUG: Getting appreciation_rates from config")
+        appreciation_rates_obj = getattr(config, "appreciation_rates", None)
+        logger.info(f"DEBUG: appreciation_rates_obj type: {type(appreciation_rates_obj)}")
+        logger.info(f"DEBUG: appreciation_rates_obj value: {appreciation_rates_obj}")
+
+        if appreciation_rates_obj is not None:
+            # Convert Pydantic model to dictionary
+            logger.info("DEBUG: Converting appreciation_rates to dict")
+            if hasattr(appreciation_rates_obj, 'dict'):
+                appreciation_rates = appreciation_rates_obj.dict()
+                logger.info("DEBUG: Used .dict() method")
+            elif hasattr(appreciation_rates_obj, '__dict__'):
+                appreciation_rates = appreciation_rates_obj.__dict__
+                logger.info("DEBUG: Used .__dict__ attribute")
+            else:
+                appreciation_rates = appreciation_rates_obj
+                logger.info("DEBUG: Used object directly")
+        else:
             appreciation_rates = {
                 "green": 0.05,
                 "orange": 0.03,
                 "red": 0.01
             }
+            logger.info("DEBUG: Used fallback appreciation_rates")
+
+        logger.info(f"DEBUG: Final appreciation_rates type: {type(appreciation_rates)}")
+        logger.info(f"DEBUG: Final appreciation_rates value: {appreciation_rates}")
 
         # Get price path configuration
         price_path_config = getattr(config, "price_path", {})
@@ -76,22 +96,53 @@ async def simulate_price_paths(context: SimulationContext) -> None:
         model_type = getattr(price_path_config, "model_type", "gbm")
 
         # Get volatility parameters
-        volatility = getattr(price_path_config, "volatility", {})
-        if not volatility:
+        logger.info("DEBUG: Getting volatility from price_path_config")
+        logger.info(f"DEBUG: price_path_config type: {type(price_path_config)}")
+        logger.info(f"DEBUG: price_path_config value: {price_path_config}")
+
+        volatility_obj = getattr(price_path_config, "volatility", None)
+        logger.info(f"DEBUG: volatility_obj type: {type(volatility_obj)}")
+        logger.info(f"DEBUG: volatility_obj value: {volatility_obj}")
+
+        if volatility_obj is not None:
+            # Convert Pydantic model to dictionary if needed
+            logger.info("DEBUG: Converting volatility to dict")
+            if hasattr(volatility_obj, 'dict'):
+                volatility = volatility_obj.dict()
+                logger.info("DEBUG: Used .dict() method for volatility")
+            elif hasattr(volatility_obj, '__dict__'):
+                volatility = volatility_obj.__dict__
+                logger.info("DEBUG: Used .__dict__ attribute for volatility")
+            else:
+                volatility = volatility_obj
+                logger.info("DEBUG: Used volatility object directly")
+        else:
             volatility = {
                 "green": 0.03,
                 "orange": 0.05,
                 "red": 0.08
             }
+            logger.info("DEBUG: Used fallback volatility")
+
+        logger.info(f"DEBUG: Final volatility type: {type(volatility)}")
+        logger.info(f"DEBUG: Final volatility value: {volatility}")
 
         # Get correlation matrix
+        logger.info("DEBUG: Getting correlation_matrix from price_path_config")
         correlation_matrix = getattr(price_path_config, "correlation_matrix", {})
+        logger.info(f"DEBUG: correlation_matrix type: {type(correlation_matrix)}")
+        logger.info(f"DEBUG: correlation_matrix value: {correlation_matrix}")
+
         if not correlation_matrix:
             correlation_matrix = {
                 "green_orange": 0.7,
                 "green_red": 0.5,
                 "orange_red": 0.8
             }
+            logger.info("DEBUG: Used fallback correlation_matrix")
+
+        logger.info(f"DEBUG: Final correlation_matrix type: {type(correlation_matrix)}")
+        logger.info(f"DEBUG: Final correlation_matrix value: {correlation_matrix}")
 
         # Get time step
         time_step = getattr(price_path_config, "time_step", "monthly")
@@ -177,8 +228,15 @@ async def simulate_price_paths(context: SimulationContext) -> None:
         zone_price_paths = {}
         for i, zone in enumerate(zones):
             # Get zone-specific parameters
-            base_rate = getattr(appreciation_rates, zone, 0.03)
-            vol = getattr(volatility, zone, 0.05)
+            logger.info(f"DEBUG: Getting parameters for zone {zone}")
+            logger.info(f"DEBUG: appreciation_rates type before .get(): {type(appreciation_rates)}")
+            logger.info(f"DEBUG: volatility type before .get(): {type(volatility)}")
+
+            base_rate = appreciation_rates.get(zone, 0.03)
+            logger.info(f"DEBUG: Got base_rate: {base_rate}")
+
+            vol = volatility.get(zone, 0.05)
+            logger.info(f"DEBUG: Got volatility: {vol}")
 
             # Simulate price path based on model type
             if model_type == "gbm":
@@ -192,8 +250,8 @@ async def simulate_price_paths(context: SimulationContext) -> None:
             elif model_type == "mean_reversion":
                 # Get mean reversion parameters
                 mean_reversion_params = getattr(price_path_config, "mean_reversion_params", {})
-                speed = getattr(mean_reversion_params, "speed", 0.2)
-                long_term_mean = getattr(mean_reversion_params, "long_term_mean", 0.03)
+                speed = mean_reversion_params.get("speed", 0.2)
+                long_term_mean = mean_reversion_params.get("long_term_mean", 0.03)
 
                 price_path = simulate_mean_reversion(
                     base_rate=base_rate,
@@ -207,10 +265,10 @@ async def simulate_price_paths(context: SimulationContext) -> None:
             elif model_type == "regime_switching":
                 # Get regime switching parameters
                 regime_params = getattr(price_path_config, "regime_switching_params", {})
-                bull_rate = getattr(regime_params, "bull_market_rate", 0.08)
-                bear_rate = getattr(regime_params, "bear_market_rate", -0.03)
-                bull_to_bear = getattr(regime_params, "bull_to_bear_prob", 0.1)
-                bear_to_bull = getattr(regime_params, "bear_to_bull_prob", 0.3)
+                bull_rate = regime_params.get("bull_market_rate", 0.08)
+                bear_rate = regime_params.get("bear_market_rate", -0.03)
+                bull_to_bear = regime_params.get("bull_to_bear_prob", 0.1)
+                bear_to_bull = regime_params.get("bear_to_bull_prob", 0.3)
 
                 price_path, regimes = simulate_regime_switching(
                     bull_rate=bull_rate,
@@ -258,9 +316,26 @@ async def simulate_price_paths(context: SimulationContext) -> None:
 
         # Get TLS data
         tls_data = context.tls_data
+        logger.info(f"DEBUG: tls_data type: {type(tls_data)}")
+        logger.info(f"DEBUG: tls_data length: {len(tls_data) if hasattr(tls_data, '__len__') else 'N/A'}")
+
+        if isinstance(tls_data, str):
+            logger.error(f"DEBUG: tls_data is a string, not a dict! Value: {tls_data}")
+            return {}
+
+        if not isinstance(tls_data, dict):
+            logger.error(f"DEBUG: tls_data is not a dict! Type: {type(tls_data)}, Value: {tls_data}")
+            return {}
 
         # Generate suburb-level price paths
         for suburb_id, suburb_data in tls_data.items():
+            logger.info(f"DEBUG: suburb_data type: {type(suburb_data)}")
+            logger.info(f"DEBUG: suburb_data value: {suburb_data}")
+
+            if isinstance(suburb_data, str):
+                logger.error(f"DEBUG: suburb_data is a string, not a dict! Value: {suburb_data}")
+                continue
+
             zone = suburb_data.get("zone", "green")
 
             # Get zone price path
@@ -298,9 +373,18 @@ async def simulate_price_paths(context: SimulationContext) -> None:
 
         # Get loans
         loans = context.loans
+        logger.info(f"DEBUG: loans type: {type(loans)}")
+        logger.info(f"DEBUG: loans length: {len(loans) if hasattr(loans, '__len__') else 'N/A'}")
 
         # Generate property-level price paths for each loan
-        for loan in loans:
+        for i, loan in enumerate(loans):
+            logger.info(f"DEBUG: loan {i} type: {type(loan)}")
+            logger.info(f"DEBUG: loan {i} value: {loan}")
+
+            if isinstance(loan, str):
+                logger.error(f"DEBUG: loan {i} is a string, not a dict! Value: {loan}")
+                continue
+
             property_id = loan.get("property_id", "")
             suburb_id = loan.get("suburb_id", "")
             zone = loan.get("zone", "green")
@@ -352,6 +436,9 @@ async def simulate_price_paths(context: SimulationContext) -> None:
             dt=dt,
         )
 
+        logger.info(f"DEBUG: price_path_stats type: {type(price_path_stats)}")
+        logger.info(f"DEBUG: price_path_stats value: {price_path_stats}")
+
         # Store statistics in context
         context.price_path_stats = price_path_stats
 
@@ -362,6 +449,7 @@ async def simulate_price_paths(context: SimulationContext) -> None:
             property_price_paths=property_price_paths,
             price_path_stats=price_path_stats,
             time_step=time_step,
+            context=context,
             market_regimes=getattr(context, "market_regimes", None),
         )
 
@@ -728,6 +816,7 @@ def generate_price_path_visualization(
     property_price_paths: Dict[str, np.ndarray],
     price_path_stats: Dict[str, Any],
     time_step: str,
+    context: SimulationContext,
     market_regimes: Optional[np.ndarray] = None,
 ) -> Dict[str, Any]:
     """
@@ -739,11 +828,14 @@ def generate_price_path_visualization(
         property_price_paths: Dictionary of price paths by property
         price_path_stats: Dictionary of price path statistics
         time_step: Time step for price path simulation
+        context: Simulation context
         market_regimes: Array of market regimes (0 = bull, 1 = bear)
 
     Returns:
         Dictionary containing visualization data
     """
+    logger.info(f"DEBUG: generate_price_path_visualization - price_path_stats type: {type(price_path_stats)}")
+    logger.info(f"DEBUG: generate_price_path_visualization - price_path_stats value: {price_path_stats}")
     # Determine time step in years
     if time_step == "monthly":
         dt = 1.0 / 12.0
@@ -807,10 +899,11 @@ def generate_price_path_visualization(
             if len(prop_path) == 0:
                 continue
 
-            # Get property zone
+            # Get property zone from loans
             property_zone = None
-            for loan in property_price_paths:
-                if loan.get("property_id") == property_id:
+            loans = getattr(context, "loans", [])
+            for loan in loans:
+                if isinstance(loan, dict) and loan.get("property_id") == property_id:
                     property_zone = loan.get("zone")
                     break
 

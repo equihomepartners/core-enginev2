@@ -14,4 +14,4 @@ mkdir -p logs
 
 # Run the server
 echo "Starting API server on ${SIM_API_HOST}:${SIM_API_PORT} in ${SIM_ENV} mode"
-python -m src.api.server
+python3 -m src.api.server

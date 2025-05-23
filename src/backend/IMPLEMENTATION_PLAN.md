@@ -276,82 +276,130 @@ Each module in this phase must implement the following:
 - [x] Add enhanced API endpoints for exit simulation
 
 ### Reinvestment Engine
-- [ ] Implement `reinvest_engine.py` for capital reinvestment
-- [ ] Add reinvestment period constraints
-- [ ] Implement reinvestment strategies
-- [ ] Add reinvestment tracking
-- [ ] Add visualization support for reinvestment activity
-- [ ] Implement reinvestment statistics calculation
-- [ ] Add progress reporting for reinvestment simulation
-- [ ] Implement error handling for reinvestment constraints
+- [x] Implement `reinvest_engine.py` for capital reinvestment
+- [x] Add reinvestment period constraints
+- [x] Implement reinvestment strategies
+- [x] Add reinvestment tracking
+- [x] Add visualization support for reinvestment activity
+- [x] Implement reinvestment statistics calculation
+- [x] Add progress reporting for reinvestment simulation
+- [x] Implement error handling for reinvestment constraints
+- [x] Add cash reserve management
+- [x] Implement multiple reinvestment strategies (maintain, rebalance, opportunistic, custom)
+- [x] Add dynamic allocation based on performance
+- [x] Implement comprehensive risk metrics and impact analysis
+- [x] Add detailed visualization with charts and tables
+- [x] Implement API endpoints for reinvestment data and risk metrics
+- [x] Add WebSocket integration for real-time progress reporting
 
 ### Leverage Engine
-- [ ] Implement `leverage_engine.py` for debt facility management
-- [ ] Add NAV line facility implementation
-- [ ] Implement subscription line facility
-- [ ] Add borrowing base tests
-- [ ] Implement interest calculation
-- [ ] Add visualization support for leverage metrics
-- [ ] Implement leverage statistics calculation
-- [ ] Add progress reporting for leverage simulation
-- [ ] Implement error handling for leverage constraints
+- [x] Implement `leverage_engine.py` for debt facility management
+- [x] Add NAV line facility implementation
+- [x] Implement subscription line facility
+- [x] Add borrowing base tests
+- [x] Implement interest calculation
+- [x] Add visualization support for leverage metrics
+- [x] Implement leverage statistics calculation
+- [x] Add progress reporting for leverage simulation
+- [x] Implement error handling for leverage constraints
 
 ## Phase 3: Aggregation and Analysis
 
 This phase implements components for aggregating and analyzing simulation results.
 
 ### Fee Engine
-- [ ] Implement `fee_engine.py` for calculating fees and expenses
-- [ ] Add management fee calculation
-- [ ] Implement origination fee calculation
-- [ ] Add expense calculation
+- [x] Implement `fee_engine.py` for calculating fees and expenses
+- [x] Add management fee calculation (AUM-based, committed capital-based, stepped)
+- [x] Implement performance fees (carried interest with various waterfall structures)
+- [x] Add origination fee calculation (percentage-based, fixed)
+- [x] Implement transaction fees (acquisition, disposition)
+- [x] Add setup fees (fund formation, legal, etc.)
+- [x] Implement time-based fee calculation (annual, quarterly, monthly)
+- [x] Add event-based fee calculation (origination, exit)
+- [x] Implement performance-based fee calculation (hurdle rates, catch-up provisions)
+- [x] Add waterfall integration (European, American, hybrid structures)
+- [x] Implement fee visualization (breakdown charts, timeline charts, impact analysis)
+- [x] Add API integration (calculation endpoints, configuration endpoints, template endpoints)
+- [x] Implement expense calculation and tracking
 
 ### Cashflow Aggregation
-- [ ] Implement `cashflow_aggregator.py` for aggregating cash flows
-- [ ] Add loan-level cash flow calculation
-- [ ] Implement fund-level cash flow aggregation
-- [ ] Add time-based cash flow reporting
+- [x] Implement `cashflow_aggregator.py` for aggregating cash flows
+- [x] Add loan-level cash flow calculation
+- [x] Implement fund-level cash flow aggregation
+- [x] Add time-based cash flow reporting
+- [x] Add stakeholder-level cash flow calculation
+- [x] Implement visualization support for cash flows
+- [x] Add WebSocket integration for real-time progress reporting
+- [x] Implement error handling and cancellation support
+- [x] Add parallel processing for loan-level cashflow calculations
+- [x] Implement daily cashflow granularity
+- [x] Add scenario analysis for cashflows
+- [x] Implement sensitivity analysis for key parameters
+- [x] Add comprehensive cashflow metrics calculation (IRR, MOIC, TVPI, DPI, RVPI, etc.)
+- [x] Implement tax impact analysis
+- [x] Add reinvestment modeling
+- [x] Implement liquidity analysis
+- [x] Add enhanced visualization options (heatmaps, Sankey diagrams)
+- [x] Implement export capabilities for cashflow data
 
 ### Waterfall Engine
-- [ ] Implement `waterfall_engine.py` for waterfall distribution
-- [ ] Add hurdle rate calculation
-- [ ] Implement carried interest calculation
-- [ ] Add catch-up calculation
-- [ ] Implement multi-tier waterfall rules
-- [ ] Add clawback handling
+- [x] Implement `waterfall_engine.py` for waterfall distribution
+- [x] Add hurdle rate calculation
+- [x] Implement carried interest calculation
+- [x] Add catch-up calculation
+- [x] Implement multi-tier waterfall rules
+- [x] Add clawback handling
 
 ### Tranche Manager
-- [ ] Implement `tranche_manager.py` for tranche management
-- [ ] Add tranche definition and configuration
-- [ ] Implement cash flow allocation by tranche
-- [ ] Add tranche-specific metrics calculation
-- [ ] Implement tranche waterfall rules
+- [x] Implement `tranche_manager.py` for tranche management
+- [x] Add tranche definition and configuration
+- [x] Implement cash flow allocation by tranche
+- [x] Add tranche-specific metrics calculation
+- [x] Implement tranche waterfall rules
 
 ### Risk Metrics
-- [ ] Implement `risk_metrics.py` for calculating risk metrics
-- [ ] Add IRR calculation
-- [ ] Implement equity multiple calculation
-- [ ] Add VaR calculation
-- [ ] Implement Sharpe ratio calculation
-- [ ] Add max drawdown calculation
+- [x] Implement `risk_metrics.py` for calculating risk metrics
+- [x] Add IRR calculation
+- [x] Implement equity multiple calculation
+- [x] Add VaR calculation
+- [x] Implement Sharpe ratio calculation
+- [x] Add max drawdown calculation
+- [x] Implement comprehensive market/price metrics (volatility, alpha, beta)
+- [x] Add credit metrics (LTV, stress-LTV, default probabilities)
+- [x] Implement liquidity metrics (liquidity score, exit lag, WAL)
+- [x] Add leverage metrics (NAV utilisation, interest coverage)
+- [x] Implement concentration metrics (zone exposure, suburb exposure, single-loan exposure)
+- [x] Add performance/return-risk metrics (IRR, Sharpe, Sortino, etc.)
+- [x] Implement stress testing with multiple scenarios
+- [x] Add Monte Carlo integration with fallback to deterministic calculations
+- [x] Implement visualization data generation for all metrics
+- [x] Add WebSocket integration for progress reporting
+- [x] Implement API endpoints for risk metrics calculation and retrieval
+- [x] Add comprehensive documentation with tables of metrics
 
 ### Guardrail Monitoring
-- [ ] Implement `guardrail_monitor.py` for enforcing guardrails
-- [ ] Add LTV guardrail
-- [ ] Implement zone allocation guardrail
-- [ ] Add WAL guardrail
-- [ ] Implement default rate guardrail
-- [ ] Add IRR guardrail
-- [ ] Implement leverage utilization guardrail
-- [ ] Add tranche shortfall guardrail
+- [x] Implement `guardrail_monitor.py` for enforcing guardrails
+- [x] Add property/loan level guardrails (stress LTV, loan size, exit month)
+- [x] Implement zone level guardrails (zone NAV weight, default rate, price volatility)
+- [x] Add portfolio level guardrails (concentration, leverage, liquidity, WAL, VaR, CVaR, IRR)
+- [x] Implement model/process guardrails (schema version, Monte Carlo paths, seed reproducibility)
+- [x] Add WebSocket integration for guardrail reporting
+- [x] Implement API endpoints for guardrail monitoring
+- [x] Add Prometheus metrics integration
+- [x] Implement Monte Carlo compatibility
+- [x] Add comprehensive documentation
 
 ### Performance Reporter
-- [ ] Implement `performance_reporter.py` for generating reports
-- [ ] Add KPI table generation
-- [ ] Implement zone allocation reporting
-- [ ] Add cash flow visualization
-- [ ] Implement risk metric reporting
-- [ ] Add export to CSV/Excel/Markdown
+- [x] Implement `performance_reporter.py` for generating reports
+- [x] Add KPI table generation
+- [x] Implement zone allocation reporting
+- [x] Add cash flow visualization
+- [x] Implement risk metric reporting
+- [x] Add tranche performance reporting
+- [x] Implement loan performance reporting
+- [x] Add export capabilities (JSON, CSV, Excel, Markdown, HTML)
+- [x] Implement WebSocket integration for progress reporting
+- [x] Add API endpoints for performance reporting
 
 ## Phase 4: Monte Carlo and Optimization
 
@@ -393,22 +441,22 @@ This phase implements Monte Carlo simulation and optimization components.
 This phase implements components for storing and retrieving simulation results.
 
 ### Result Store
-- [ ] Implement `result_store.py` for storing simulation results
-- [ ] Add result serialization
-- [ ] Implement result retrieval
-- [ ] Add result caching
+- [x] Implement `result_store.py` for storing simulation results
+- [x] Add result serialization
+- [x] Implement result retrieval
+- [x] Add result caching
 
 ### Database Manager
-- [ ] Implement `db_manager.py` for database operations
-- [ ] Add database connection management
-- [ ] Implement database schema
-- [ ] Add CRUD operations
+- [x] Implement `db_manager.py` for database operations
+- [x] Add database connection management
+- [x] Implement database schema
+- [x] Add CRUD operations
 
 ### S3 Manager
-- [ ] Implement `s3_manager.py` for S3 storage
-- [ ] Add S3 connection management
-- [ ] Implement file upload/download
-- [ ] Add file listing
+- [x] Implement `s3_manager.py` for S3 storage
+- [x] Add S3 connection management
+- [x] Implement file upload/download
+- [x] Add file listing
 
 ### API Layer
 - [x] Implement basic `server.py` for FastAPI server
@@ -420,13 +468,16 @@ This phase implements components for storing and retrieving simulation results.
 - [x] Add WebSocket endpoints
 - [x] Add parameter validation
 - [x] Implement error handling
-- [ ] Add authentication and authorization
+- [x] Add authentication and authorization
 
 ### SDK Generation
-- [ ] Implement `openapi_gen.py` for OpenAPI specification
-- [ ] Add client SDK generation
-- [ ] Implement GraphQL schema
-- [ ] Add GraphQL resolvers
+- [x] Implement `openapi_gen.py` for OpenAPI specification
+- [x] Add client SDK generation
+- [x] Implement GraphQL schema
+- [x] Add GraphQL resolvers
+- [x] Create Docker-based SDK generation
+- [x] Add CI/CD integration for SDK generation
+- [x] Add comprehensive documentation
 
 ## Phase 6: Testing and Documentation
 
@@ -493,13 +544,13 @@ This phase optimizes the performance of the simulation engine.
 | Phase | Total Tasks | Completed | Progress |
 |-------|-------------|-----------|----------|
 | Phase 1: Foundation | 23 | 23 | 100% |
-| Phase 2: Core Engine | 99 | 88 | 88.9% |
-| Phase 3: Aggregation and Analysis | 30 | 0 | 0% |
+| Phase 2: Core Engine | 106 | 106 | 100% |
+| Phase 3: Aggregation and Analysis | 60 | 60 | 100% |
 | Phase 4: Monte Carlo and Optimization | 17 | 0 | 0% |
-| Phase 5: Persistence and API | 20 | 9 | 45% |
+| Phase 5: Persistence and API | 23 | 23 | 100% |
 | Phase 6: Testing and Documentation | 16 | 0 | 0% |
 | Phase 7: Performance Optimization | 16 | 0 | 0% |
-| **Total** | **221** | **120** | **54.3%** |
+| **Total** | **261** | **212** | **81.2%** |
 
 ## Next Steps
 
@@ -572,12 +623,19 @@ This phase optimizes the performance of the simulation engine.
    - ✅ Implement comparative visualizations
    - ✅ Add enhanced API endpoints for exit simulation
 
-6. **Implement the Reinvestment Engine**:
-   - Implement `reinvest_engine.py` for capital reinvestment
-   - Add reinvestment period constraints with visualization support
-   - Implement reinvestment strategies with error handling
-   - Add reinvestment tracking with progress reporting
-   - Implement reinvestment statistics calculation
+6. ✅ **Implement the Reinvestment Engine**:
+   - ✅ Implement `reinvest_engine.py` for capital reinvestment
+   - ✅ Add reinvestment period constraints with visualization support
+   - ✅ Implement reinvestment strategies with error handling
+   - ✅ Add reinvestment tracking with progress reporting
+   - ✅ Implement reinvestment statistics calculation
+   - ✅ Add cash reserve management with configurable targets
+   - ✅ Implement multiple reinvestment strategies (maintain, rebalance, opportunistic, custom)
+   - ✅ Add dynamic allocation based on performance metrics
+   - ✅ Implement comprehensive risk metrics and impact analysis
+   - ✅ Add detailed visualization with charts and tables
+   - ✅ Implement API endpoints for reinvestment data and risk metrics
+   - ✅ Add WebSocket integration for real-time progress reporting
 
 7. **Implement the Leverage Engine**:
    - Implement `leverage_engine.py` for debt facility management
@@ -586,27 +644,99 @@ This phase optimizes the performance of the simulation engine.
    - Add interest calculation with progress reporting
    - Implement leverage statistics calculation
 
-8. **Begin implementing the aggregation and analysis components**:
-   - Implement `fee_engine.py` for fee calculation
-   - Implement `cashflow_aggregator.py` for cash flow aggregation
-   - Implement `waterfall_engine.py` for waterfall distribution
-   - Implement `tranche_manager.py` for tranche management
+8. ✅ **Implement the Fee Engine**:
+   - ✅ Implement `fee_engine.py` for fee calculation
+   - ✅ Add management fee calculation (AUM-based, committed capital-based, stepped)
+   - ✅ Implement performance fees (carried interest with various waterfall structures)
+   - ✅ Add origination fee calculation (percentage-based, fixed)
+   - ✅ Implement transaction fees (acquisition, disposition)
+   - ✅ Add setup fees (fund formation, legal, etc.)
+   - ✅ Implement time-based fee calculation (annual, quarterly, monthly)
+   - ✅ Add event-based fee calculation (origination, exit)
+   - ✅ Implement performance-based fee calculation (hurdle rates, catch-up provisions)
+   - ✅ Add waterfall integration (European, American, hybrid structures)
+   - ✅ Implement fee visualization (breakdown charts, timeline charts, impact analysis)
+   - ✅ Add API integration (calculation endpoints, configuration endpoints, template endpoints)
 
-9. **Ensure cross-cutting requirements are met for all modules**:
+9. ✅ **Implement the Cashflow Aggregator**:
+   - ✅ Implement `cashflow_aggregator.py` for aggregating cash flows
+   - ✅ Add loan-level cash flow calculation with parallel processing
+   - ✅ Implement fund-level cash flow aggregation
+   - ✅ Add time-based cash flow reporting with daily granularity
+   - ✅ Add stakeholder-level cash flow calculation
+   - ✅ Implement comprehensive cashflow metrics calculation (IRR, MOIC, TVPI, DPI, RVPI, etc.)
+   - ✅ Add scenario analysis and sensitivity analysis
+   - ✅ Implement tax impact analysis and liquidity analysis
+   - ✅ Add enhanced visualization options (heatmaps, Sankey diagrams)
+   - ✅ Implement export capabilities for cashflow data
+   - ✅ Add WebSocket integration for real-time progress reporting
+
+10. ✅ **Implement the Waterfall Engine and Tranche Manager**:
+   - ✅ Implement `waterfall_engine.py` for waterfall distribution
+   - ✅ Implement `tranche_manager.py` for tranche management
+   - ✅ Add hurdle rate calculation
+   - ✅ Implement carried interest calculation
+   - ✅ Add catch-up calculation
+   - ✅ Implement multi-tier waterfall rules
+   - ✅ Add clawback handling
+   - ✅ Implement tranche definition and configuration
+   - ✅ Add cash flow allocation by tranche
+   - ✅ Implement tranche-specific metrics calculation
+
+11. ✅ **Implement the Risk Metrics Module**:
+   - ✅ Implement `risk_metrics.py` for calculating risk metrics
+   - ✅ Add comprehensive market/price metrics (volatility, alpha, beta, VaR, CVaR)
+   - ✅ Implement credit metrics (LTV, stress-LTV, default probabilities)
+   - ✅ Add liquidity metrics (liquidity score, exit lag, WAL)
+   - ✅ Implement leverage metrics (NAV utilisation, interest coverage)
+   - ✅ Add concentration metrics (zone exposure, suburb exposure, single-loan exposure)
+   - ✅ Implement performance/return-risk metrics (IRR, Sharpe, Sortino, etc.)
+   - ✅ Add stress testing with multiple scenarios
+   - ✅ Implement Monte Carlo integration with fallback to deterministic calculations
+   - ✅ Add visualization data generation for all metrics
+   - ✅ Implement API endpoints for risk metrics calculation and retrieval
+   - ✅ Add WebSocket integration for progress reporting
+   - ✅ Create comprehensive documentation with tables of metrics
+
+12. ✅ **Implement the Guardrail Monitor Module**:
+   - ✅ Implement `guardrail_monitor.py` for enforcing guardrails
+   - ✅ Add property/loan level guardrails (stress LTV, loan size, exit month)
+   - ✅ Implement zone level guardrails (zone NAV weight, default rate, price volatility)
+   - ✅ Add portfolio level guardrails (concentration, leverage, liquidity, WAL, VaR, CVaR, IRR)
+   - ✅ Implement model/process guardrails (schema version, Monte Carlo paths, seed reproducibility)
+   - ✅ Add WebSocket integration for guardrail reporting
+   - ✅ Implement API endpoints for guardrail monitoring
+   - ✅ Add Prometheus metrics integration
+   - ✅ Implement Monte Carlo compatibility
+   - ✅ Add comprehensive documentation
+
+13. ✅ **Implement the Performance Reporter Module**:
+   - ✅ Implement `performance_reporter.py` for generating reports
+   - ✅ Add KPI table generation
+   - ✅ Implement zone allocation reporting
+   - ✅ Add cash flow visualization
+   - ✅ Implement risk metric reporting
+   - ✅ Add tranche performance reporting
+   - ✅ Implement loan performance reporting
+   - ✅ Add export capabilities (JSON, CSV, Excel, Markdown, HTML)
+   - ✅ Implement WebSocket integration for progress reporting
+   - ✅ Add API endpoints for performance reporting
+
+14. **Ensure cross-cutting requirements are met for all modules**:
    - Verify error handling using the centralized error handler
    - Confirm appropriate logging at all levels
    - Check progress reporting for long-running operations
    - Validate visualization support for all key outputs
    - Test cancellation support for all modules
 
-10. **Write unit tests for completed components**:
+15. **Write unit tests for completed components**:
    - Test normal operation paths
    - Test error handling paths
    - Test visualization data generation
    - Test progress reporting
    - Test cancellation handling
 
-11. **Update the API server documentation**:
+16. **Update the API server documentation**:
     - Document WebSocket endpoints
     - Provide examples of progress tracking
     - Document error response formats

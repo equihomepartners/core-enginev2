@@ -67,12 +67,73 @@ class LoansResponse(BaseModel):
     offset: int = Field(..., description="Offset for pagination")
 
 
+class LeverageFacility(BaseModel):
+    """Leverage facility model."""
+    facility_id: str = Field(..., description="Facility ID")
+    facility_type: str = Field(..., description="Facility type (nav_line, subscription_line)")
+    max_amount: float = Field(..., description="Maximum facility amount")
+    interest_rate: float = Field(..., description="Annual interest rate (as a decimal)")
+    commitment_fee_bps: float = Field(..., description="Commitment fee on undrawn balance (basis points)")
+    term_years: float = Field(..., description="Term of the facility in years")
+    advance_rate: Optional[float] = Field(None, description="Maximum advance rate (for NAV lines)")
+    current_balance: float = Field(..., description="Current outstanding balance")
+    available_amount: float = Field(..., description="Available amount to draw")
+    inception_date: Optional[str] = Field(None, description="Date when the facility was first drawn")
+    maturity_date: Optional[str] = Field(None, description="Date when the facility matures")
+
+
+class LeverageEvent(BaseModel):
+    """Leverage event model."""
+    facility_id: str = Field(..., description="Facility ID")
+    date: str = Field(..., description="Date of the event")
+    amount: float = Field(..., description="Amount of the event")
+    year: float = Field(..., description="Simulation year")
+    month: int = Field(..., description="Month (1-12)")
+    event_type: str = Field(..., description="Event type (draw, repayment, interest, fee)")
+    details: Optional[Dict[str, Any]] = Field(None, description="Additional details")
+
+
+class LeverageMetrics(BaseModel):
+    """Leverage metrics model."""
+    total_debt: float = Field(..., description="Total debt outstanding")
+    total_available: float = Field(..., description="Total available debt capacity")
+    total_interest_paid: float = Field(..., description="Total interest paid")
+    total_commitment_fees_paid: float = Field(..., description="Total commitment fees paid")
+    weighted_avg_interest_rate: float = Field(..., description="Weighted average interest rate")
+    leverage_ratio: float = Field(..., description="Leverage ratio (debt / NAV)")
+    debt_service_coverage_ratio: float = Field(..., description="Debt service coverage ratio")
+    interest_coverage_ratio: float = Field(..., description="Interest coverage ratio")
+    loan_to_value_ratio: float = Field(..., description="Loan-to-value ratio")
+
+
+class LeverageVisualization(BaseModel):
+    """Leverage visualization model."""
+    leverage_timeline: List[Dict[str, Any]] = Field(..., description="Timeline of leverage")
+    facility_utilization: List[Dict[str, Any]] = Field(..., description="Facility utilization over time")
+    interest_expense: List[Dict[str, Any]] = Field(..., description="Interest expense over time")
+
+
+class StressTestResult(BaseModel):
+    """Stress test result model."""
+    is_compliant: bool = Field(..., description="Whether the test is compliant")
+    details: Dict[str, Any] = Field(..., description="Test details")
+
+
+class LeverageResponse(BaseModel):
+    """Leverage response model."""
+    facilities: List[LeverageFacility] = Field(..., description="Debt facilities")
+    metrics: LeverageMetrics = Field(..., description="Leverage metrics")
+    visualization: LeverageVisualization = Field(..., description="Visualization data")
+    stress_test_results: Optional[Dict[str, StressTestResult]] = Field(None, description="Stress test results")
+
+
 class VisualizationResponse(BaseModel):
     """Visualization response model."""
     capital_allocation: Optional[Dict[str, Any]] = Field(None, description="Capital allocation visualization")
     loan_portfolio: Optional[Dict[str, Any]] = Field(None, description="Loan portfolio visualization")
     allocation_history: Optional[Dict[str, Any]] = Field(None, description="Allocation history visualization")
     loan_portfolio_history: Optional[Dict[str, Any]] = Field(None, description="Loan portfolio history visualization")
+    leverage: Optional[Dict[str, Any]] = Field(None, description="Leverage visualization")
 
 
 class ReinvestmentRequest(BaseModel):
@@ -395,4 +456,314 @@ async def get_visualizations(simulation_id: str) -> VisualizationResponse:
     if "loan_portfolio" in simulation and "loan_portfolio_history_visualization" in simulation["loan_portfolio"]:
         visualizations["loan_portfolio_history"] = simulation["loan_portfolio"]["loan_portfolio_history_visualization"]
 
+    # Add leverage visualization if available
+    if "leverage" in simulation and "visualization" in simulation["leverage"]:
+        visualizations["leverage"] = simulation["leverage"]["visualization"]
+
     return VisualizationResponse(**visualizations)
+
+
+@router.get("/{simulation_id}/leverage", response_model=LeverageResponse)
+async def get_leverage(simulation_id: str) -> LeverageResponse:
+    """
+    Get leverage data for a simulation.
+
+    Args:
+        simulation_id: Simulation ID
+
+    Returns:
+        Leverage data
+    """
+    if simulation_id not in simulations:
+        raise HTTPException(status_code=404, detail="Simulation not found")
+
+    simulation = simulations[simulation_id]
+
+    # Check if simulation has leverage data
+    if "context" not in simulation:
+        raise HTTPException(status_code=404, detail="Simulation context not found")
+
+    context = simulation["context"]
+
+    # Check if leverage is enabled
+    if not hasattr(context, "leverage_facilities"):
+        raise HTTPException(status_code=404, detail="Leverage not enabled for this simulation")
+
+    # Get facilities
+    facilities = []
+    for facility_id, facility_data in context.leverage_facilities.items():
+        facilities.append({
+            "facility_id": facility_id,
+            **facility_data,
+        })
+
+    # Get metrics
+    metrics = getattr(context, "leverage_metrics", {})
+
+    # Get visualization data
+    visualization = {}
+
+    # Check if leverage visualization is available
+    if hasattr(context, "leverage_visualization"):
+        visualization = context.leverage_visualization
+    else:
+        # Calculate visualization data manually
+        visualization = {
+            "leverage_timeline": getattr(context, "leverage_timeline", []),
+            "facility_utilization": getattr(context, "facility_utilization", []),
+            "interest_expense": [],
+        }
+
+        # Calculate interest expense over time
+        interest_payments = getattr(context, "leverage_interest_payments", [])
+        commitment_fees = getattr(context, "leverage_commitment_fees", [])
+
+        # Group by year and month
+        interest_by_period = {}
+        for payment in interest_payments:
+            year = payment.get("year", 0)
+            month = payment.get("month", 0)
+            key = (year, month)
+
+            if key not in interest_by_period:
+                interest_by_period[key] = {
+                    "year": year,
+                    "month": month,
+                    "interest_amount": 0,
+                    "commitment_fees": 0,
+                    "total_expense": 0,
+                }
+
+            interest_by_period[key]["interest_amount"] += payment.get("amount", 0)
+            interest_by_period[key]["total_expense"] += payment.get("amount", 0)
+
+        for fee in commitment_fees:
+            year = fee.get("year", 0)
+            month = fee.get("month", 0)
+            key = (year, month)
+
+            if key not in interest_by_period:
+                interest_by_period[key] = {
+                    "year": year,
+                    "month": month,
+                    "interest_amount": 0,
+                    "commitment_fees": 0,
+                    "total_expense": 0,
+                }
+
+            interest_by_period[key]["commitment_fees"] += fee.get("amount", 0)
+            interest_by_period[key]["total_expense"] += fee.get("amount", 0)
+
+        # Convert to list and sort by year and month
+        interest_expense = sorted(
+            interest_by_period.values(),
+            key=lambda x: (x["year"], x["month"])
+        )
+
+        visualization["interest_expense"] = interest_expense
+
+    # Get stress test results
+    stress_test_results = None
+    if hasattr(context, "leverage_stress_test_results"):
+        raw_results = context.leverage_stress_test_results
+        stress_test_results = {}
+
+        # Convert raw results to API model
+        for test_name, test_data in raw_results.items():
+            is_compliant = test_data.get("is_compliant", False)
+            details = {k: v for k, v in test_data.items() if k != "is_compliant"}
+            stress_test_results[test_name] = {
+                "is_compliant": is_compliant,
+                "details": details
+            }
+
+    return LeverageResponse(
+        facilities=facilities,
+        metrics=metrics,
+        visualization=visualization,
+        stress_test_results=stress_test_results,
+    )
+
+
+@router.get("/{simulation_id}/leverage/facilities", response_model=List[LeverageFacility])
+async def get_leverage_facilities(simulation_id: str) -> List[LeverageFacility]:
+    """
+    Get leverage facilities for a simulation.
+
+    Args:
+        simulation_id: Simulation ID
+
+    Returns:
+        Leverage facilities
+    """
+    if simulation_id not in simulations:
+        raise HTTPException(status_code=404, detail="Simulation not found")
+
+    simulation = simulations[simulation_id]
+
+    # Check if simulation has leverage data
+    if "context" not in simulation:
+        raise HTTPException(status_code=404, detail="Simulation context not found")
+
+    context = simulation["context"]
+
+    # Check if leverage is enabled
+    if not hasattr(context, "leverage_facilities"):
+        raise HTTPException(status_code=404, detail="Leverage not enabled for this simulation")
+
+    # Get facilities
+    facilities = []
+    for facility_id, facility_data in context.leverage_facilities.items():
+        facilities.append({
+            "facility_id": facility_id,
+            **facility_data,
+        })
+
+    return facilities
+
+
+@router.get("/{simulation_id}/leverage/events", response_model=List[LeverageEvent])
+async def get_leverage_events(
+    simulation_id: str,
+    event_type: Optional[str] = Query(None, description="Filter by event type (draw, repayment, interest, fee)"),
+    facility_id: Optional[str] = Query(None, description="Filter by facility ID"),
+) -> List[LeverageEvent]:
+    """
+    Get leverage events for a simulation.
+
+    Args:
+        simulation_id: Simulation ID
+        event_type: Filter by event type (draw, repayment, interest, fee)
+        facility_id: Filter by facility ID
+
+    Returns:
+        Leverage events
+    """
+    if simulation_id not in simulations:
+        raise HTTPException(status_code=404, detail="Simulation not found")
+
+    simulation = simulations[simulation_id]
+
+    # Check if simulation has leverage data
+    if "context" not in simulation:
+        raise HTTPException(status_code=404, detail="Simulation context not found")
+
+    context = simulation["context"]
+
+    # Check if leverage is enabled
+    if not hasattr(context, "leverage_facilities"):
+        raise HTTPException(status_code=404, detail="Leverage not enabled for this simulation")
+
+    # Get events
+    events = []
+
+    # Add draws
+    draws = getattr(context, "leverage_draws", [])
+    for draw in draws:
+        if facility_id and draw.get("facility_id") != facility_id:
+            continue
+
+        if event_type and event_type != "draw":
+            continue
+
+        events.append({
+            **draw,
+            "event_type": "draw",
+            "details": {
+                "purpose": draw.get("purpose", ""),
+            },
+        })
+
+    # Add repayments
+    repayments = getattr(context, "leverage_repayments", [])
+    for repayment in repayments:
+        if facility_id and repayment.get("facility_id") != facility_id:
+            continue
+
+        if event_type and event_type != "repayment":
+            continue
+
+        events.append({
+            **repayment,
+            "event_type": "repayment",
+            "details": {
+                "source": repayment.get("source", ""),
+            },
+        })
+
+    # Add interest payments
+    interest_payments = getattr(context, "leverage_interest_payments", [])
+    for payment in interest_payments:
+        if facility_id and payment.get("facility_id") != facility_id:
+            continue
+
+        if event_type and event_type != "interest":
+            continue
+
+        events.append({
+            **payment,
+            "event_type": "interest",
+            "details": {
+                "interest_rate": payment.get("interest_rate", 0),
+                "average_balance": payment.get("average_balance", 0),
+                "period_start": payment.get("period_start", ""),
+                "period_end": payment.get("period_end", ""),
+            },
+        })
+
+    # Add commitment fees
+    commitment_fees = getattr(context, "leverage_commitment_fees", [])
+    for fee in commitment_fees:
+        if facility_id and fee.get("facility_id") != facility_id:
+            continue
+
+        if event_type and event_type != "fee":
+            continue
+
+        events.append({
+            **fee,
+            "event_type": "fee",
+            "details": {
+                "fee_rate_bps": fee.get("fee_rate_bps", 0),
+                "average_undrawn": fee.get("average_undrawn", 0),
+                "period_start": fee.get("period_start", ""),
+                "period_end": fee.get("period_end", ""),
+            },
+        })
+
+    # Sort events by year and month
+    events.sort(key=lambda x: (x["year"], x["month"]))
+
+    return events
+
+
+@router.get("/{simulation_id}/leverage/metrics", response_model=LeverageMetrics)
+async def get_leverage_metrics(simulation_id: str) -> LeverageMetrics:
+    """
+    Get leverage metrics for a simulation.
+
+    Args:
+        simulation_id: Simulation ID
+
+    Returns:
+        Leverage metrics
+    """
+    if simulation_id not in simulations:
+        raise HTTPException(status_code=404, detail="Simulation not found")
+
+    simulation = simulations[simulation_id]
+
+    # Check if simulation has leverage data
+    if "context" not in simulation:
+        raise HTTPException(status_code=404, detail="Simulation context not found")
+
+    context = simulation["context"]
+
+    # Check if leverage is enabled
+    if not hasattr(context, "leverage_metrics"):
+        raise HTTPException(status_code=404, detail="Leverage not enabled for this simulation")
+
+    # Get metrics
+    metrics = getattr(context, "leverage_metrics", {})
+
+    return LeverageMetrics(**metrics)

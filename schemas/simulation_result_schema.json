@@ -17,88 +17,1676 @@
       "type": "object",
       "description": "Configuration used for the simulation"
     },
+    "cashflows": {
+      "type": "object",
+      "description": "Cashflow aggregation results",
+      "properties": {
+        "loan_level_cashflows": {
+          "type": "array",
+          "description": "Loan-level cashflows",
+          "items": {
+            "type": "object",
+            "properties": {
+              "loan_id": {
+                "type": "string",
+                "description": "Loan ID"
+              },
+              "origination": {
+                "type": "object",
+                "description": "Origination cashflows",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "month": {
+                    "type": "number",
+                    "description": "Month"
+                  },
+                  "loan_amount": {
+                    "type": "number",
+                    "description": "Loan amount (negative cashflow)"
+                  },
+                  "origination_fee": {
+                    "type": "number",
+                    "description": "Origination fee (positive cashflow)"
+                  }
+                }
+              },
+              "exit": {
+                "type": "object",
+                "description": "Exit cashflows",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "month": {
+                    "type": "number",
+                    "description": "Month"
+                  },
+                  "principal": {
+                    "type": "number",
+                    "description": "Principal repayment (positive cashflow)"
+                  },
+                  "accrued_interest": {
+                    "type": "number",
+                    "description": "Accrued interest (positive cashflow)"
+                  },
+                  "appreciation_share": {
+                    "type": "number",
+                    "description": "Appreciation share (positive cashflow)"
+                  },
+                  "total": {
+                    "type": "number",
+                    "description": "Total exit cashflow"
+                  },
+                  "exit_type": {
+                    "type": "string",
+                    "description": "Type of exit (sale, refinance, default, term)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "fund_level_cashflows": {
+          "type": "array",
+          "description": "Fund-level cashflows by period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "description": "Year"
+              },
+              "month": {
+                "type": "number",
+                "description": "Month (if applicable)"
+              },
+              "quarter": {
+                "type": "number",
+                "description": "Quarter (if applicable)"
+              },
+              "capital_calls": {
+                "type": "number",
+                "description": "Capital calls (negative cashflow)"
+              },
+              "loan_investments": {
+                "type": "number",
+                "description": "Loan investments (negative cashflow)"
+              },
+              "origination_fees": {
+                "type": "number",
+                "description": "Origination fees (positive cashflow)"
+              },
+              "principal_repayments": {
+                "type": "number",
+                "description": "Principal repayments (positive cashflow)"
+              },
+              "interest_income": {
+                "type": "number",
+                "description": "Interest income (positive cashflow)"
+              },
+              "appreciation_share": {
+                "type": "number",
+                "description": "Appreciation share (positive cashflow)"
+              },
+              "management_fees": {
+                "type": "number",
+                "description": "Management fees (negative cashflow)"
+              },
+              "fund_expenses": {
+                "type": "number",
+                "description": "Fund expenses (negative cashflow)"
+              },
+              "leverage_draws": {
+                "type": "number",
+                "description": "Leverage draws (positive cashflow)"
+              },
+              "leverage_repayments": {
+                "type": "number",
+                "description": "Leverage repayments (negative cashflow)"
+              },
+              "leverage_interest": {
+                "type": "number",
+                "description": "Leverage interest (negative cashflow)"
+              },
+              "distributions": {
+                "type": "number",
+                "description": "Distributions to investors (negative cashflow)"
+              },
+              "net_cashflow": {
+                "type": "number",
+                "description": "Net cashflow for the period"
+              },
+              "cumulative_cashflow": {
+                "type": "number",
+                "description": "Cumulative cashflow to date"
+              }
+            }
+          }
+        },
+        "stakeholder_cashflows": {
+          "type": "object",
+          "description": "Stakeholder-level cashflows",
+          "properties": {
+            "lp_cashflows": {
+              "type": "array",
+              "description": "Limited Partner cashflows by period",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "month": {
+                    "type": "number",
+                    "description": "Month (if applicable)"
+                  },
+                  "quarter": {
+                    "type": "number",
+                    "description": "Quarter (if applicable)"
+                  },
+                  "capital_calls": {
+                    "type": "number",
+                    "description": "Capital calls (negative cashflow)"
+                  },
+                  "distributions": {
+                    "type": "number",
+                    "description": "Distributions (positive cashflow)"
+                  },
+                  "net_cashflow": {
+                    "type": "number",
+                    "description": "Net cashflow for the period"
+                  },
+                  "cumulative_cashflow": {
+                    "type": "number",
+                    "description": "Cumulative cashflow to date"
+                  }
+                }
+              }
+            },
+            "gp_cashflows": {
+              "type": "array",
+              "description": "General Partner cashflows by period",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "month": {
+                    "type": "number",
+                    "description": "Month (if applicable)"
+                  },
+                  "quarter": {
+                    "type": "number",
+                    "description": "Quarter (if applicable)"
+                  },
+                  "capital_calls": {
+                    "type": "number",
+                    "description": "Capital calls (negative cashflow)"
+                  },
+                  "management_fees": {
+                    "type": "number",
+                    "description": "Management fees (positive cashflow)"
+                  },
+                  "origination_fees": {
+                    "type": "number",
+                    "description": "Origination fees (positive cashflow)"
+                  },
+                  "carried_interest": {
+                    "type": "number",
+                    "description": "Carried interest (positive cashflow)"
+                  },
+                  "distributions": {
+                    "type": "number",
+                    "description": "Distributions (positive cashflow)"
+                  },
+                  "net_cashflow": {
+                    "type": "number",
+                    "description": "Net cashflow for the period"
+                  },
+                  "cumulative_cashflow": {
+                    "type": "number",
+                    "description": "Cumulative cashflow to date"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Visualization data for cashflows",
+          "properties": {
+            "cashflow_waterfall_chart": {
+              "type": "array",
+              "description": "Cashflow waterfall chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "description": "Cashflow category"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "description": "Cashflow amount"
+                  }
+                }
+              }
+            },
+            "cashflow_by_year_chart": {
+              "type": "array",
+              "description": "Cashflow by year chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "inflows": {
+                    "type": "number",
+                    "description": "Total inflows"
+                  },
+                  "outflows": {
+                    "type": "number",
+                    "description": "Total outflows"
+                  },
+                  "net": {
+                    "type": "number",
+                    "description": "Net cashflow"
+                  }
+                }
+              }
+            },
+            "cumulative_cashflow_chart": {
+              "type": "array",
+              "description": "Cumulative cashflow chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "cumulative_cashflow": {
+                    "type": "number",
+                    "description": "Cumulative cashflow"
+                  }
+                }
+              }
+            },
+            "cashflow_table": {
+              "type": "array",
+              "description": "Cashflow table data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "capital_calls": {
+                    "type": "number",
+                    "description": "Capital calls"
+                  },
+                  "loan_investments": {
+                    "type": "number",
+                    "description": "Loan investments"
+                  },
+                  "origination_fees": {
+                    "type": "number",
+                    "description": "Origination fees"
+                  },
+                  "principal_repayments": {
+                    "type": "number",
+                    "description": "Principal repayments"
+                  },
+                  "interest_income": {
+                    "type": "number",
+                    "description": "Interest income"
+                  },
+                  "appreciation_share": {
+                    "type": "number",
+                    "description": "Appreciation share"
+                  },
+                  "management_fees": {
+                    "type": "number",
+                    "description": "Management fees"
+                  },
+                  "fund_expenses": {
+                    "type": "number",
+                    "description": "Fund expenses"
+                  },
+                  "distributions": {
+                    "type": "number",
+                    "description": "Distributions"
+                  },
+                  "net_cashflow": {
+                    "type": "number",
+                    "description": "Net cashflow"
+                  },
+                  "cumulative_cashflow": {
+                    "type": "number",
+                    "description": "Cumulative cashflow"
+                  }
+                }
+              }
+            },
+            "cashflow_heatmap": {
+              "type": "array",
+              "description": "Cashflow heatmap data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "month": {
+                    "type": "number",
+                    "description": "Month"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Cashflow category"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "description": "Cashflow amount"
+                  }
+                }
+              }
+            },
+            "cashflow_sankey": {
+              "type": "object",
+              "description": "Cashflow Sankey diagram data",
+              "properties": {
+                "nodes": {
+                  "type": "array",
+                  "description": "Nodes in the Sankey diagram",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Node ID"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Node name"
+                      }
+                    }
+                  }
+                },
+                "links": {
+                  "type": "array",
+                  "description": "Links in the Sankey diagram",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "description": "Source node ID"
+                      },
+                      "target": {
+                        "type": "string",
+                        "description": "Target node ID"
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "Link value"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "scenario_comparison_chart": {
+              "type": "array",
+              "description": "Scenario comparison chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "scenario": {
+                    "type": "string",
+                    "description": "Scenario name"
+                  },
+                  "metric": {
+                    "type": "string",
+                    "description": "Metric name"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "Metric value"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "description": "Cashflow metrics",
+          "properties": {
+            "fund_level_metrics": {
+              "type": "object",
+              "description": "Fund-level metrics",
+              "properties": {
+                "irr": {
+                  "type": "number",
+                  "description": "Internal Rate of Return"
+                },
+                "moic": {
+                  "type": "number",
+                  "description": "Multiple on Invested Capital"
+                },
+                "tvpi": {
+                  "type": "number",
+                  "description": "Total Value to Paid-In"
+                },
+                "dpi": {
+                  "type": "number",
+                  "description": "Distributions to Paid-In"
+                },
+                "rvpi": {
+                  "type": "number",
+                  "description": "Residual Value to Paid-In"
+                },
+                "payback_period": {
+                  "type": "number",
+                  "description": "Payback period in years"
+                },
+                "cash_on_cash": {
+                  "type": "number",
+                  "description": "Cash-on-cash return"
+                },
+                "npv": {
+                  "type": "number",
+                  "description": "Net Present Value"
+                },
+                "profitability_index": {
+                  "type": "number",
+                  "description": "Profitability Index"
+                },
+                "cash_yield": {
+                  "type": "number",
+                  "description": "Cash yield"
+                }
+              }
+            },
+            "lp_metrics": {
+              "type": "object",
+              "description": "LP metrics",
+              "properties": {
+                "irr": {
+                  "type": "number",
+                  "description": "Internal Rate of Return"
+                },
+                "moic": {
+                  "type": "number",
+                  "description": "Multiple on Invested Capital"
+                },
+                "tvpi": {
+                  "type": "number",
+                  "description": "Total Value to Paid-In"
+                },
+                "dpi": {
+                  "type": "number",
+                  "description": "Distributions to Paid-In"
+                },
+                "rvpi": {
+                  "type": "number",
+                  "description": "Residual Value to Paid-In"
+                },
+                "payback_period": {
+                  "type": "number",
+                  "description": "Payback period in years"
+                }
+              }
+            },
+            "gp_metrics": {
+              "type": "object",
+              "description": "GP metrics",
+              "properties": {
+                "irr": {
+                  "type": "number",
+                  "description": "Internal Rate of Return"
+                },
+                "moic": {
+                  "type": "number",
+                  "description": "Multiple on Invested Capital"
+                },
+                "tvpi": {
+                  "type": "number",
+                  "description": "Total Value to Paid-In"
+                },
+                "dpi": {
+                  "type": "number",
+                  "description": "Distributions to Paid-In"
+                },
+                "rvpi": {
+                  "type": "number",
+                  "description": "Residual Value to Paid-In"
+                },
+                "payback_period": {
+                  "type": "number",
+                  "description": "Payback period in years"
+                },
+                "carried_interest": {
+                  "type": "number",
+                  "description": "Total carried interest"
+                },
+                "management_fees": {
+                  "type": "number",
+                  "description": "Total management fees"
+                },
+                "origination_fees": {
+                  "type": "number",
+                  "description": "Total origination fees"
+                }
+              }
+            },
+            "metrics_by_year": {
+              "type": "array",
+              "description": "Metrics by year",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "dpi": {
+                    "type": "number",
+                    "description": "Distributions to Paid-In"
+                  },
+                  "rvpi": {
+                    "type": "number",
+                    "description": "Residual Value to Paid-In"
+                  },
+                  "tvpi": {
+                    "type": "number",
+                    "description": "Total Value to Paid-In"
+                  },
+                  "irr": {
+                    "type": "number",
+                    "description": "Internal Rate of Return"
+                  },
+                  "cash_yield": {
+                    "type": "number",
+                    "description": "Cash yield"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "sensitivity_analysis": {
+          "type": "object",
+          "description": "Sensitivity analysis results",
+          "properties": {
+            "parameter_variations": {
+              "type": "array",
+              "description": "Parameter variations",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "parameter": {
+                    "type": "string",
+                    "description": "Parameter name"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "Parameter value"
+                  },
+                  "metrics": {
+                    "type": "object",
+                    "description": "Metrics for this parameter value",
+                    "properties": {
+                      "irr": {
+                        "type": "number",
+                        "description": "Internal Rate of Return"
+                      },
+                      "tvpi": {
+                        "type": "number",
+                        "description": "Total Value to Paid-In"
+                      },
+                      "npv": {
+                        "type": "number",
+                        "description": "Net Present Value"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "tornado_chart": {
+              "type": "array",
+              "description": "Tornado chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "parameter": {
+                    "type": "string",
+                    "description": "Parameter name"
+                  },
+                  "low_value": {
+                    "type": "number",
+                    "description": "Low parameter value"
+                  },
+                  "high_value": {
+                    "type": "number",
+                    "description": "High parameter value"
+                  },
+                  "low_metric": {
+                    "type": "number",
+                    "description": "Metric value at low parameter value"
+                  },
+                  "high_metric": {
+                    "type": "number",
+                    "description": "Metric value at high parameter value"
+                  },
+                  "base_metric": {
+                    "type": "number",
+                    "description": "Metric value at base parameter value"
+                  },
+                  "metric_name": {
+                    "type": "string",
+                    "description": "Metric name"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "scenario_analysis": {
+          "type": "object",
+          "description": "Scenario analysis results",
+          "properties": {
+            "scenarios": {
+              "type": "array",
+              "description": "Scenario results",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Scenario name"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Scenario description"
+                  },
+                  "metrics": {
+                    "type": "object",
+                    "description": "Metrics for this scenario",
+                    "properties": {
+                      "irr": {
+                        "type": "number",
+                        "description": "Internal Rate of Return"
+                      },
+                      "tvpi": {
+                        "type": "number",
+                        "description": "Total Value to Paid-In"
+                      },
+                      "npv": {
+                        "type": "number",
+                        "description": "Net Present Value"
+                      }
+                    }
+                  },
+                  "cashflows": {
+                    "type": "array",
+                    "description": "Cashflows for this scenario",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "year": {
+                          "type": "number",
+                          "description": "Year"
+                        },
+                        "net_cashflow": {
+                          "type": "number",
+                          "description": "Net cashflow"
+                        },
+                        "cumulative_cashflow": {
+                          "type": "number",
+                          "description": "Cumulative cashflow"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tax_impact": {
+          "type": "object",
+          "description": "Tax impact analysis results",
+          "properties": {
+            "pre_tax_cashflows": {
+              "type": "array",
+              "description": "Pre-tax cashflows by year",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "net_cashflow": {
+                    "type": "number",
+                    "description": "Net cashflow"
+                  }
+                }
+              }
+            },
+            "post_tax_cashflows": {
+              "type": "array",
+              "description": "Post-tax cashflows by year",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "net_cashflow": {
+                    "type": "number",
+                    "description": "Net cashflow"
+                  },
+                  "tax_amount": {
+                    "type": "number",
+                    "description": "Tax amount"
+                  }
+                }
+              }
+            },
+            "tax_metrics": {
+              "type": "object",
+              "description": "Tax metrics",
+              "properties": {
+                "pre_tax_irr": {
+                  "type": "number",
+                  "description": "Pre-tax IRR"
+                },
+                "post_tax_irr": {
+                  "type": "number",
+                  "description": "Post-tax IRR"
+                },
+                "pre_tax_npv": {
+                  "type": "number",
+                  "description": "Pre-tax NPV"
+                },
+                "post_tax_npv": {
+                  "type": "number",
+                  "description": "Post-tax NPV"
+                },
+                "total_tax_amount": {
+                  "type": "number",
+                  "description": "Total tax amount"
+                },
+                "effective_tax_rate": {
+                  "type": "number",
+                  "description": "Effective tax rate"
+                }
+              }
+            }
+          }
+        },
+        "liquidity_analysis": {
+          "type": "object",
+          "description": "Liquidity analysis results",
+          "properties": {
+            "cash_reserves": {
+              "type": "array",
+              "description": "Cash reserves by year",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "month": {
+                    "type": "number",
+                    "description": "Month"
+                  },
+                  "cash_reserve": {
+                    "type": "number",
+                    "description": "Cash reserve"
+                  },
+                  "minimum_required": {
+                    "type": "number",
+                    "description": "Minimum required cash reserve"
+                  },
+                  "shortfall": {
+                    "type": "number",
+                    "description": "Shortfall (if any)"
+                  }
+                }
+              }
+            },
+            "liquidity_metrics": {
+              "type": "object",
+              "description": "Liquidity metrics",
+              "properties": {
+                "min_cash_reserve": {
+                  "type": "number",
+                  "description": "Minimum cash reserve"
+                },
+                "max_cash_reserve": {
+                  "type": "number",
+                  "description": "Maximum cash reserve"
+                },
+                "avg_cash_reserve": {
+                  "type": "number",
+                  "description": "Average cash reserve"
+                },
+                "num_shortfall_periods": {
+                  "type": "number",
+                  "description": "Number of periods with shortfall"
+                },
+                "max_shortfall": {
+                  "type": "number",
+                  "description": "Maximum shortfall"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "fees": {
+      "type": "object",
+      "description": "Fee calculation results",
+      "properties": {
+        "management_fees": {
+          "type": "array",
+          "description": "Management fees by year",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "description": "Year"
+              },
+              "fee_amount": {
+                "type": "number",
+                "description": "Fee amount in dollars"
+              },
+              "fee_basis": {
+                "type": "string",
+                "description": "Basis for fee calculation"
+              },
+              "basis_amount": {
+                "type": "number",
+                "description": "Amount used as basis for fee calculation"
+              },
+              "fee_rate": {
+                "type": "number",
+                "description": "Fee rate applied"
+              }
+            }
+          }
+        },
+        "origination_fees": {
+          "type": "array",
+          "description": "Origination fees by loan",
+          "items": {
+            "type": "object",
+            "properties": {
+              "loan_id": {
+                "type": "string",
+                "description": "Loan ID"
+              },
+              "fee_amount": {
+                "type": "number",
+                "description": "Fee amount in dollars"
+              },
+              "loan_amount": {
+                "type": "number",
+                "description": "Loan amount"
+              },
+              "fee_rate": {
+                "type": "number",
+                "description": "Fee rate applied"
+              },
+              "year": {
+                "type": "number",
+                "description": "Year the fee was charged"
+              }
+            }
+          }
+        },
+        "fund_expenses": {
+          "type": "array",
+          "description": "Fund expenses by year",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "description": "Year"
+              },
+              "expense_amount": {
+                "type": "number",
+                "description": "Expense amount in dollars"
+              },
+              "expense_type": {
+                "type": "string",
+                "description": "Type of expense"
+              }
+            }
+          }
+        },
+        "acquisition_fees": {
+          "type": "array",
+          "description": "Acquisition fees by loan",
+          "items": {
+            "type": "object",
+            "properties": {
+              "loan_id": {
+                "type": "string",
+                "description": "Loan ID"
+              },
+              "fee_amount": {
+                "type": "number",
+                "description": "Fee amount in dollars"
+              },
+              "property_value": {
+                "type": "number",
+                "description": "Property value"
+              },
+              "fee_rate": {
+                "type": "number",
+                "description": "Fee rate applied"
+              },
+              "year": {
+                "type": "number",
+                "description": "Year the fee was charged"
+              }
+            }
+          }
+        },
+        "disposition_fees": {
+          "type": "array",
+          "description": "Disposition fees by loan",
+          "items": {
+            "type": "object",
+            "properties": {
+              "loan_id": {
+                "type": "string",
+                "description": "Loan ID"
+              },
+              "fee_amount": {
+                "type": "number",
+                "description": "Fee amount in dollars"
+              },
+              "exit_value": {
+                "type": "number",
+                "description": "Exit value"
+              },
+              "fee_rate": {
+                "type": "number",
+                "description": "Fee rate applied"
+              },
+              "year": {
+                "type": "number",
+                "description": "Year the fee was charged"
+              }
+            }
+          }
+        },
+        "setup_costs": {
+          "type": "number",
+          "description": "One-time setup costs in dollars"
+        },
+        "total_fees": {
+          "type": "object",
+          "description": "Total fees by category",
+          "properties": {
+            "management_fees": {
+              "type": "number",
+              "description": "Total management fees"
+            },
+            "origination_fees": {
+              "type": "number",
+              "description": "Total origination fees"
+            },
+            "fund_expenses": {
+              "type": "number",
+              "description": "Total fund expenses"
+            },
+            "acquisition_fees": {
+              "type": "number",
+              "description": "Total acquisition fees"
+            },
+            "disposition_fees": {
+              "type": "number",
+              "description": "Total disposition fees"
+            },
+            "setup_costs": {
+              "type": "number",
+              "description": "Total setup costs"
+            },
+            "total": {
+              "type": "number",
+              "description": "Total of all fees and expenses"
+            }
+          }
+        },
+        "fee_impact": {
+          "type": "object",
+          "description": "Impact of fees on fund performance",
+          "properties": {
+            "gross_irr": {
+              "type": "number",
+              "description": "IRR before fees"
+            },
+            "net_irr": {
+              "type": "number",
+              "description": "IRR after fees"
+            },
+            "irr_impact": {
+              "type": "number",
+              "description": "Impact of fees on IRR (percentage points)"
+            },
+            "gross_equity_multiple": {
+              "type": "number",
+              "description": "Equity multiple before fees"
+            },
+            "net_equity_multiple": {
+              "type": "number",
+              "description": "Equity multiple after fees"
+            },
+            "equity_multiple_impact": {
+              "type": "number",
+              "description": "Impact of fees on equity multiple"
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Visualization data for fees",
+          "properties": {
+            "fee_breakdown_chart": {
+              "type": "array",
+              "description": "Fee breakdown chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "description": "Fee category"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "description": "Fee amount"
+                  },
+                  "percentage": {
+                    "type": "number",
+                    "description": "Percentage of total fees"
+                  }
+                }
+              }
+            },
+            "fees_by_year_chart": {
+              "type": "array",
+              "description": "Fees by year chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "management_fees": {
+                    "type": "number",
+                    "description": "Management fees"
+                  },
+                  "origination_fees": {
+                    "type": "number",
+                    "description": "Origination fees"
+                  },
+                  "fund_expenses": {
+                    "type": "number",
+                    "description": "Fund expenses"
+                  },
+                  "acquisition_fees": {
+                    "type": "number",
+                    "description": "Acquisition fees"
+                  },
+                  "disposition_fees": {
+                    "type": "number",
+                    "description": "Disposition fees"
+                  },
+                  "total": {
+                    "type": "number",
+                    "description": "Total fees"
+                  }
+                }
+              }
+            },
+            "fee_impact_chart": {
+              "type": "array",
+              "description": "Fee impact chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "metric": {
+                    "type": "string",
+                    "description": "Performance metric"
+                  },
+                  "gross": {
+                    "type": "number",
+                    "description": "Gross value (before fees)"
+                  },
+                  "net": {
+                    "type": "number",
+                    "description": "Net value (after fees)"
+                  },
+                  "impact": {
+                    "type": "number",
+                    "description": "Impact of fees"
+                  }
+                }
+              }
+            },
+            "fee_table": {
+              "type": "array",
+              "description": "Fee table data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "management_fees": {
+                    "type": "number",
+                    "description": "Management fees"
+                  },
+                  "origination_fees": {
+                    "type": "number",
+                    "description": "Origination fees"
+                  },
+                  "fund_expenses": {
+                    "type": "number",
+                    "description": "Fund expenses"
+                  },
+                  "acquisition_fees": {
+                    "type": "number",
+                    "description": "Acquisition fees"
+                  },
+                  "disposition_fees": {
+                    "type": "number",
+                    "description": "Disposition fees"
+                  },
+                  "total": {
+                    "type": "number",
+                    "description": "Total fees"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "metrics": {
       "type": "object",
+      "description": "Risk and performance metrics",
       "properties": {
-        "irr": {
-          "type": "number",
-          "description": "Internal Rate of Return"
+        "return_metrics": {
+          "type": "object",
+          "description": "Return-based metrics",
+          "properties": {
+            "irr": {
+              "type": "number",
+              "description": "Internal Rate of Return"
+            },
+            "equity_multiple": {
+              "type": "number",
+              "description": "Equity Multiple"
+            },
+            "moic": {
+              "type": "number",
+              "description": "Multiple on Invested Capital"
+            },
+            "tvpi": {
+              "type": "number",
+              "description": "Total Value to Paid-In"
+            },
+            "dpi": {
+              "type": "number",
+              "description": "Distributions to Paid-In"
+            },
+            "rvpi": {
+              "type": "number",
+              "description": "Residual Value to Paid-In"
+            },
+            "roi": {
+              "type": "number",
+              "description": "Return on Investment"
+            },
+            "payback_period": {
+              "type": ["number", "null"],
+              "description": "Payback Period in years"
+            },
+            "cash_yield": {
+              "type": "number",
+              "description": "Cash Yield"
+            },
+            "annualized_return": {
+              "type": "number",
+              "description": "Annualized Return"
+            }
+          }
         },
-        "equity_multiple": {
-          "type": "number",
-          "description": "Equity Multiple"
+        "risk_metrics": {
+          "type": "object",
+          "description": "Risk metrics",
+          "properties": {
+            "var_95": {
+              "type": "number",
+              "description": "Value at Risk (95%)"
+            },
+            "var_99": {
+              "type": "number",
+              "description": "Value at Risk (99%)"
+            },
+            "cvar_95": {
+              "type": "number",
+              "description": "Conditional Value at Risk (95%)"
+            },
+            "cvar_99": {
+              "type": "number",
+              "description": "Conditional Value at Risk (99%)"
+            },
+            "max_drawdown": {
+              "type": "number",
+              "description": "Maximum Drawdown"
+            },
+            "volatility": {
+              "type": "number",
+              "description": "Volatility (standard deviation of returns)"
+            },
+            "downside_deviation": {
+              "type": "number",
+              "description": "Downside Deviation"
+            },
+            "tail_risk": {
+              "type": "number",
+              "description": "Tail Risk"
+            },
+            "tail_probability": {
+              "type": "number",
+              "description": "Tail Probability"
+            },
+            "tail_severity": {
+              "type": "number",
+              "description": "Tail Severity"
+            }
+          }
         },
-        "roi": {
-          "type": "number",
-          "description": "Return on Investment"
+        "risk_adjusted_return_metrics": {
+          "type": "object",
+          "description": "Risk-adjusted return metrics",
+          "properties": {
+            "sharpe_ratio": {
+              "type": "number",
+              "description": "Sharpe Ratio"
+            },
+            "sortino_ratio": {
+              "type": "number",
+              "description": "Sortino Ratio"
+            },
+            "calmar_ratio": {
+              "type": "number",
+              "description": "Calmar Ratio"
+            },
+            "information_ratio": {
+              "type": "number",
+              "description": "Information Ratio"
+            },
+            "treynor_ratio": {
+              "type": "number",
+              "description": "Treynor Ratio"
+            },
+            "omega_ratio": {
+              "type": "number",
+              "description": "Omega Ratio"
+            },
+            "kappa_ratio": {
+              "type": "number",
+              "description": "Kappa Ratio"
+            },
+            "gain_loss_ratio": {
+              "type": "number",
+              "description": "Gain-Loss Ratio"
+            }
+          }
         },
-        "payback_period": {
-          "type": ["number", "null"],
-          "description": "Payback Period in years"
+        "market_metrics": {
+          "type": "object",
+          "description": "Market-related metrics",
+          "properties": {
+            "beta": {
+              "type": "number",
+              "description": "Beta (market sensitivity)"
+            },
+            "alpha": {
+              "type": "number",
+              "description": "Alpha (excess return)"
+            },
+            "tracking_error": {
+              "type": "number",
+              "description": "Tracking Error"
+            },
+            "r_squared": {
+              "type": "number",
+              "description": "R-Squared (correlation with benchmark)"
+            },
+            "upside_capture": {
+              "type": "number",
+              "description": "Upside Capture Ratio"
+            },
+            "downside_capture": {
+              "type": "number",
+              "description": "Downside Capture Ratio"
+            },
+            "upside_potential": {
+              "type": "number",
+              "description": "Upside Potential"
+            },
+            "downside_risk": {
+              "type": "number",
+              "description": "Downside Risk"
+            }
+          }
         },
-        "var_95": {
-          "type": "number",
-          "description": "Value at Risk (95%)"
+        "concentration_metrics": {
+          "type": "object",
+          "description": "Concentration metrics",
+          "properties": {
+            "herfindahl_index": {
+              "type": "number",
+              "description": "Herfindahl-Hirschman Index (HHI)"
+            },
+            "zone_concentration": {
+              "type": "object",
+              "description": "Zone concentration metrics",
+              "properties": {
+                "green": {
+                  "type": "number",
+                  "description": "Concentration in green zone"
+                },
+                "orange": {
+                  "type": "number",
+                  "description": "Concentration in orange zone"
+                },
+                "red": {
+                  "type": "number",
+                  "description": "Concentration in red zone"
+                },
+                "hhi": {
+                  "type": "number",
+                  "description": "Zone HHI"
+                }
+              }
+            },
+            "suburb_concentration": {
+              "type": "object",
+              "description": "Suburb concentration metrics",
+              "properties": {
+                "top_5_pct": {
+                  "type": "number",
+                  "description": "Percentage in top 5 suburbs"
+                },
+                "top_10_pct": {
+                  "type": "number",
+                  "description": "Percentage in top 10 suburbs"
+                },
+                "hhi": {
+                  "type": "number",
+                  "description": "Suburb HHI"
+                }
+              }
+            }
+          }
         },
-        "var_99": {
-          "type": "number",
-          "description": "Value at Risk (99%)"
+        "stress_test_results": {
+          "type": "object",
+          "description": "Stress test results",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Results for a specific stress test scenario",
+            "properties": {
+              "irr": {
+                "type": "number",
+                "description": "IRR under stress scenario"
+              },
+              "equity_multiple": {
+                "type": "number",
+                "description": "Equity multiple under stress scenario"
+              },
+              "roi": {
+                "type": "number",
+                "description": "ROI under stress scenario"
+              },
+              "max_drawdown": {
+                "type": "number",
+                "description": "Maximum drawdown under stress scenario"
+              },
+              "var_95": {
+                "type": "number",
+                "description": "VaR (95%) under stress scenario"
+              },
+              "impact_pct": {
+                "type": "number",
+                "description": "Percentage impact on base case IRR"
+              }
+            }
+          }
         },
-        "sharpe_ratio": {
-          "type": "number",
-          "description": "Sharpe Ratio"
+        "sensitivity_analysis": {
+          "type": "object",
+          "description": "Sensitivity analysis results",
+          "additionalProperties": {
+            "type": "array",
+            "description": "Sensitivity data for a specific parameter",
+            "items": {
+              "type": "object",
+              "properties": {
+                "parameter_value": {
+                  "type": "number",
+                  "description": "Parameter value"
+                },
+                "irr": {
+                  "type": "number",
+                  "description": "IRR at this parameter value"
+                },
+                "equity_multiple": {
+                  "type": "number",
+                  "description": "Equity multiple at this parameter value"
+                },
+                "roi": {
+                  "type": "number",
+                  "description": "ROI at this parameter value"
+                }
+              }
+            }
+          }
         },
-        "max_drawdown": {
-          "type": "number",
-          "description": "Maximum Drawdown"
-        },
-        "volatility": {
-          "type": "number",
-          "description": "Volatility"
-        },
-        "sortino_ratio": {
-          "type": "number",
-          "description": "Sortino Ratio"
-        },
-        "calmar_ratio": {
-          "type": "number",
-          "description": "Calmar Ratio"
-        },
-        "beta": {
-          "type": "number",
-          "description": "Beta"
-        },
-        "alpha": {
-          "type": "number",
-          "description": "Alpha"
-        },
-        "information_ratio": {
-          "type": "number",
-          "description": "Information Ratio"
-        },
-        "tracking_error": {
-          "type": "number",
-          "description": "Tracking Error"
-        },
-        "downside_deviation": {
-          "type": "number",
-          "description": "Downside Deviation"
-        },
-        "upside_potential": {
-          "type": "number",
-          "description": "Upside Potential"
-        },
-        "downside_risk": {
-          "type": "number",
-          "description": "Downside Risk"
-        },
-        "upside_capture": {
-          "type": "number",
-          "description": "Upside Capture"
-        },
-        "downside_capture": {
-          "type": "number",
-          "description": "Downside Capture"
+        "visualization": {
+          "type": "object",
+          "description": "Visualization data for risk metrics",
+          "properties": {
+            "risk_return_scatter": {
+              "type": "array",
+              "description": "Risk-return scatter plot data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "scenario": {
+                    "type": "string",
+                    "description": "Scenario name"
+                  },
+                  "risk": {
+                    "type": "number",
+                    "description": "Risk measure (e.g., volatility)"
+                  },
+                  "return": {
+                    "type": "number",
+                    "description": "Return measure (e.g., IRR)"
+                  }
+                }
+              }
+            },
+            "var_histogram": {
+              "type": "object",
+              "description": "VaR histogram data",
+              "properties": {
+                "bins": {
+                  "type": "array",
+                  "description": "Histogram bins",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "frequencies": {
+                  "type": "array",
+                  "description": "Frequencies for each bin",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "var_95": {
+                  "type": "number",
+                  "description": "VaR (95%) value"
+                },
+                "var_99": {
+                  "type": "number",
+                  "description": "VaR (99%) value"
+                }
+              }
+            },
+            "drawdown_chart": {
+              "type": "array",
+              "description": "Drawdown chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "month": {
+                    "type": "number",
+                    "description": "Month"
+                  },
+                  "drawdown": {
+                    "type": "number",
+                    "description": "Drawdown percentage"
+                  }
+                }
+              }
+            },
+            "stress_test_comparison": {
+              "type": "array",
+              "description": "Stress test comparison chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "scenario": {
+                    "type": "string",
+                    "description": "Scenario name"
+                  },
+                  "metric": {
+                    "type": "string",
+                    "description": "Metric name"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "Metric value"
+                  },
+                  "base_value": {
+                    "type": "number",
+                    "description": "Base case value"
+                  },
+                  "pct_change": {
+                    "type": "number",
+                    "description": "Percentage change from base case"
+                  }
+                }
+              }
+            },
+            "sensitivity_charts": {
+              "type": "object",
+              "description": "Sensitivity analysis chart data",
+              "additionalProperties": {
+                "type": "array",
+                "description": "Sensitivity data for a specific metric",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "parameter": {
+                      "type": "string",
+                      "description": "Parameter name"
+                    },
+                    "values": {
+                      "type": "array",
+                      "description": "Parameter values",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    "metric_values": {
+                      "type": "array",
+                      "description": "Metric values",
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "concentration_chart": {
+              "type": "array",
+              "description": "Concentration chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "description": "Category (e.g., zone, suburb)"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name (e.g., 'green', 'Bondi')"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "Concentration value"
+                  },
+                  "percentage": {
+                    "type": "number",
+                    "description": "Percentage of total"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -2600,8 +4188,1121 @@
           }
         }
       }
+    },
+    "tranches": {
+      "type": "object",
+      "description": "Tranche manager results",
+      "properties": {
+        "tranche_summary": {
+          "type": "array",
+          "description": "Summary of tranches",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Tranche name"
+              },
+              "type": {
+                "type": "string",
+                "description": "Tranche type"
+              },
+              "size": {
+                "type": "number",
+                "description": "Tranche size in dollars"
+              },
+              "priority": {
+                "type": "integer",
+                "description": "Payment priority"
+              },
+              "interest_rate": {
+                "type": "number",
+                "description": "Interest rate for debt tranches"
+              },
+              "target_return": {
+                "type": "number",
+                "description": "Target return for the tranche"
+              },
+              "actual_return": {
+                "type": "number",
+                "description": "Actual return achieved"
+              },
+              "irr": {
+                "type": "number",
+                "description": "Internal rate of return"
+              },
+              "moic": {
+                "type": "number",
+                "description": "Multiple on invested capital"
+              },
+              "total_payments": {
+                "type": "number",
+                "description": "Total payments made to the tranche"
+              },
+              "principal_payments": {
+                "type": "number",
+                "description": "Principal payments made to the tranche"
+              },
+              "interest_payments": {
+                "type": "number",
+                "description": "Interest payments made to the tranche"
+              },
+              "profit_share_payments": {
+                "type": "number",
+                "description": "Profit share payments made to the tranche"
+              },
+              "shortfall": {
+                "type": "number",
+                "description": "Shortfall amount (if any)"
+              },
+              "status": {
+                "type": "string",
+                "description": "Tranche status (e.g., 'paid', 'defaulted', 'active')"
+              }
+            }
+          }
+        },
+        "tranche_cashflows": {
+          "type": "object",
+          "description": "Cashflows by tranche",
+          "additionalProperties": {
+            "type": "array",
+            "description": "Cashflows for a tranche",
+            "items": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "number",
+                  "description": "Year"
+                },
+                "month": {
+                  "type": "number",
+                  "description": "Month (if applicable)"
+                },
+                "quarter": {
+                  "type": "number",
+                  "description": "Quarter (if applicable)"
+                },
+                "principal_payment": {
+                  "type": "number",
+                  "description": "Principal payment"
+                },
+                "interest_payment": {
+                  "type": "number",
+                  "description": "Interest payment"
+                },
+                "profit_share_payment": {
+                  "type": "number",
+                  "description": "Profit share payment"
+                },
+                "total_payment": {
+                  "type": "number",
+                  "description": "Total payment"
+                },
+                "remaining_principal": {
+                  "type": "number",
+                  "description": "Remaining principal"
+                }
+              }
+            }
+          }
+        },
+        "tranche_allocations": {
+          "type": "object",
+          "description": "Loan allocations by tranche",
+          "additionalProperties": {
+            "type": "array",
+            "description": "Loan allocations for a tranche",
+            "items": {
+              "type": "object",
+              "properties": {
+                "loan_id": {
+                  "type": "string",
+                  "description": "Loan ID"
+                },
+                "allocation_percentage": {
+                  "type": "number",
+                  "description": "Percentage of the loan allocated to this tranche"
+                },
+                "allocation_amount": {
+                  "type": "number",
+                  "description": "Amount of the loan allocated to this tranche"
+                },
+                "zone": {
+                  "type": "string",
+                  "description": "Zone of the loan"
+                },
+                "ltv": {
+                  "type": "number",
+                  "description": "LTV of the loan"
+                }
+              }
+            }
+          }
+        },
+        "coverage_tests": {
+          "type": "array",
+          "description": "Coverage test results",
+          "items": {
+            "type": "object",
+            "properties": {
+              "test_type": {
+                "type": "string",
+                "description": "Test type (e.g., 'overcollateralization', 'interest_coverage')"
+              },
+              "test_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date of the test"
+              },
+              "year": {
+                "type": "number",
+                "description": "Year of the test"
+              },
+              "month": {
+                "type": "number",
+                "description": "Month of the test"
+              },
+              "threshold": {
+                "type": "number",
+                "description": "Test threshold"
+              },
+              "actual_value": {
+                "type": "number",
+                "description": "Actual value"
+              },
+              "passed": {
+                "type": "boolean",
+                "description": "Whether the test passed"
+              },
+              "cure_deadline": {
+                "type": ["string", "null"],
+                "format": "date-time",
+                "description": "Deadline to cure the test failure (if applicable)"
+              },
+              "cured": {
+                "type": ["boolean", "null"],
+                "description": "Whether the test failure was cured (if applicable)"
+              }
+            }
+          }
+        },
+        "reserve_account": {
+          "type": "array",
+          "description": "Reserve account history",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "description": "Year"
+              },
+              "month": {
+                "type": "number",
+                "description": "Month"
+              },
+              "balance": {
+                "type": "number",
+                "description": "Reserve account balance"
+              },
+              "target_balance": {
+                "type": "number",
+                "description": "Target reserve account balance"
+              },
+              "deposits": {
+                "type": "number",
+                "description": "Deposits to the reserve account"
+              },
+              "withdrawals": {
+                "type": "number",
+                "description": "Withdrawals from the reserve account"
+              }
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Visualization data for tranches",
+          "properties": {
+            "tranche_waterfall_chart": {
+              "type": "array",
+              "description": "Tranche waterfall chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tranche": {
+                    "type": "string",
+                    "description": "Tranche name"
+                  },
+                  "principal": {
+                    "type": "number",
+                    "description": "Principal amount"
+                  },
+                  "interest": {
+                    "type": "number",
+                    "description": "Interest amount"
+                  },
+                  "profit_share": {
+                    "type": "number",
+                    "description": "Profit share amount"
+                  },
+                  "total": {
+                    "type": "number",
+                    "description": "Total amount"
+                  }
+                }
+              }
+            },
+            "tranche_cashflow_chart": {
+              "type": "object",
+              "description": "Tranche cashflow chart data",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Year"
+                    },
+                    "quarter": {
+                      "type": "number",
+                      "description": "Quarter"
+                    },
+                    "payment": {
+                      "type": "number",
+                      "description": "Payment amount"
+                    }
+                  }
+                }
+              }
+            },
+            "tranche_allocation_chart": {
+              "type": "array",
+              "description": "Tranche allocation chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tranche": {
+                    "type": "string",
+                    "description": "Tranche name"
+                  },
+                  "green": {
+                    "type": "number",
+                    "description": "Green zone allocation"
+                  },
+                  "orange": {
+                    "type": "number",
+                    "description": "Orange zone allocation"
+                  },
+                  "red": {
+                    "type": "number",
+                    "description": "Red zone allocation"
+                  }
+                }
+              }
+            },
+            "tranche_performance_chart": {
+              "type": "array",
+              "description": "Tranche performance chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tranche": {
+                    "type": "string",
+                    "description": "Tranche name"
+                  },
+                  "target_return": {
+                    "type": "number",
+                    "description": "Target return"
+                  },
+                  "actual_return": {
+                    "type": "number",
+                    "description": "Actual return"
+                  },
+                  "irr": {
+                    "type": "number",
+                    "description": "IRR"
+                  },
+                  "moic": {
+                    "type": "number",
+                    "description": "MOIC"
+                  }
+                }
+              }
+            },
+            "coverage_test_chart": {
+              "type": "object",
+              "description": "Coverage test chart data",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Year"
+                    },
+                    "month": {
+                      "type": "number",
+                      "description": "Month"
+                    },
+                    "actual_value": {
+                      "type": "number",
+                      "description": "Actual value"
+                    },
+                    "threshold": {
+                      "type": "number",
+                      "description": "Threshold"
+                    }
+                  }
+                }
+              }
+            },
+            "reserve_account_chart": {
+              "type": "array",
+              "description": "Reserve account chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "month": {
+                    "type": "number",
+                    "description": "Month"
+                  },
+                  "balance": {
+                    "type": "number",
+                    "description": "Balance"
+                  },
+                  "target": {
+                    "type": "number",
+                    "description": "Target balance"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tranches": {
+      "type": "object",
+      "description": "Tranche manager results",
+      "properties": {
+        "tranche_summary": {
+          "type": "array",
+          "description": "Summary of tranches",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Tranche name"
+              },
+              "type": {
+                "type": "string",
+                "description": "Tranche type"
+              },
+              "size": {
+                "type": "number",
+                "description": "Tranche size in dollars"
+              },
+              "priority": {
+                "type": "integer",
+                "description": "Payment priority"
+              },
+              "interest_rate": {
+                "type": "number",
+                "description": "Interest rate for debt tranches"
+              },
+              "target_return": {
+                "type": "number",
+                "description": "Target return for the tranche"
+              },
+              "actual_return": {
+                "type": "number",
+                "description": "Actual return achieved"
+              },
+              "irr": {
+                "type": "number",
+                "description": "Internal rate of return"
+              },
+              "moic": {
+                "type": "number",
+                "description": "Multiple on invested capital"
+              },
+              "total_payments": {
+                "type": "number",
+                "description": "Total payments made to the tranche"
+              },
+              "principal_payments": {
+                "type": "number",
+                "description": "Principal payments made to the tranche"
+              },
+              "interest_payments": {
+                "type": "number",
+                "description": "Interest payments made to the tranche"
+              },
+              "profit_share_payments": {
+                "type": "number",
+                "description": "Profit share payments made to the tranche"
+              },
+              "shortfall": {
+                "type": "number",
+                "description": "Shortfall amount (if any)"
+              },
+              "status": {
+                "type": "string",
+                "description": "Tranche status (e.g., 'paid', 'defaulted', 'active')"
+              }
+            }
+          }
+        },
+        "tranche_cashflows": {
+          "type": "object",
+          "description": "Cashflows by tranche",
+          "additionalProperties": {
+            "type": "array",
+            "description": "Cashflows for a tranche",
+            "items": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "number",
+                  "description": "Year"
+                },
+                "month": {
+                  "type": "number",
+                  "description": "Month (if applicable)"
+                },
+                "quarter": {
+                  "type": "number",
+                  "description": "Quarter (if applicable)"
+                },
+                "principal_payment": {
+                  "type": "number",
+                  "description": "Principal payment"
+                },
+                "interest_payment": {
+                  "type": "number",
+                  "description": "Interest payment"
+                },
+                "profit_share_payment": {
+                  "type": "number",
+                  "description": "Profit share payment"
+                },
+                "total_payment": {
+                  "type": "number",
+                  "description": "Total payment"
+                },
+                "remaining_principal": {
+                  "type": "number",
+                  "description": "Remaining principal"
+                }
+              }
+            }
+          }
+        },
+        "tranche_allocations": {
+          "type": "object",
+          "description": "Loan allocations by tranche",
+          "additionalProperties": {
+            "type": "array",
+            "description": "Loan allocations for a tranche",
+            "items": {
+              "type": "object",
+              "properties": {
+                "loan_id": {
+                  "type": "string",
+                  "description": "Loan ID"
+                },
+                "allocation_percentage": {
+                  "type": "number",
+                  "description": "Percentage of the loan allocated to this tranche"
+                },
+                "allocation_amount": {
+                  "type": "number",
+                  "description": "Amount of the loan allocated to this tranche"
+                },
+                "zone": {
+                  "type": "string",
+                  "description": "Zone of the loan"
+                },
+                "ltv": {
+                  "type": "number",
+                  "description": "LTV of the loan"
+                }
+              }
+            }
+          }
+        },
+        "coverage_tests": {
+          "type": "array",
+          "description": "Coverage test results",
+          "items": {
+            "type": "object",
+            "properties": {
+              "test_type": {
+                "type": "string",
+                "description": "Test type (e.g., 'overcollateralization', 'interest_coverage')"
+              },
+              "test_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date of the test"
+              },
+              "year": {
+                "type": "number",
+                "description": "Year of the test"
+              },
+              "month": {
+                "type": "number",
+                "description": "Month of the test"
+              },
+              "threshold": {
+                "type": "number",
+                "description": "Test threshold"
+              },
+              "actual_value": {
+                "type": "number",
+                "description": "Actual value"
+              },
+              "passed": {
+                "type": "boolean",
+                "description": "Whether the test passed"
+              },
+              "cure_deadline": {
+                "type": ["string", "null"],
+                "format": "date-time",
+                "description": "Deadline to cure the test failure (if applicable)"
+              },
+              "cured": {
+                "type": ["boolean", "null"],
+                "description": "Whether the test failure was cured (if applicable)"
+              }
+            }
+          }
+        },
+        "reserve_account": {
+          "type": "array",
+          "description": "Reserve account history",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "description": "Year"
+              },
+              "month": {
+                "type": "number",
+                "description": "Month"
+              },
+              "balance": {
+                "type": "number",
+                "description": "Reserve account balance"
+              },
+              "target_balance": {
+                "type": "number",
+                "description": "Target reserve account balance"
+              },
+              "deposits": {
+                "type": "number",
+                "description": "Deposits to the reserve account"
+              },
+              "withdrawals": {
+                "type": "number",
+                "description": "Withdrawals from the reserve account"
+              }
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Visualization data for tranches",
+          "properties": {
+            "tranche_waterfall_chart": {
+              "type": "array",
+              "description": "Tranche waterfall chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tranche": {
+                    "type": "string",
+                    "description": "Tranche name"
+                  },
+                  "principal": {
+                    "type": "number",
+                    "description": "Principal amount"
+                  },
+                  "interest": {
+                    "type": "number",
+                    "description": "Interest amount"
+                  },
+                  "profit_share": {
+                    "type": "number",
+                    "description": "Profit share amount"
+                  },
+                  "total": {
+                    "type": "number",
+                    "description": "Total amount"
+                  }
+                }
+              }
+            },
+            "tranche_cashflow_chart": {
+              "type": "object",
+              "description": "Tranche cashflow chart data",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Year"
+                    },
+                    "quarter": {
+                      "type": "number",
+                      "description": "Quarter"
+                    },
+                    "payment": {
+                      "type": "number",
+                      "description": "Payment amount"
+                    }
+                  }
+                }
+              }
+            },
+            "tranche_allocation_chart": {
+              "type": "array",
+              "description": "Tranche allocation chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tranche": {
+                    "type": "string",
+                    "description": "Tranche name"
+                  },
+                  "green": {
+                    "type": "number",
+                    "description": "Green zone allocation"
+                  },
+                  "orange": {
+                    "type": "number",
+                    "description": "Orange zone allocation"
+                  },
+                  "red": {
+                    "type": "number",
+                    "description": "Red zone allocation"
+                  }
+                }
+              }
+            },
+            "tranche_performance_chart": {
+              "type": "array",
+              "description": "Tranche performance chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tranche": {
+                    "type": "string",
+                    "description": "Tranche name"
+                  },
+                  "target_return": {
+                    "type": "number",
+                    "description": "Target return"
+                  },
+                  "actual_return": {
+                    "type": "number",
+                    "description": "Actual return"
+                  },
+                  "irr": {
+                    "type": "number",
+                    "description": "IRR"
+                  },
+                  "moic": {
+                    "type": "number",
+                    "description": "MOIC"
+                  }
+                }
+              }
+            },
+            "coverage_test_chart": {
+              "type": "object",
+              "description": "Coverage test chart data",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "number",
+                      "description": "Year"
+                    },
+                    "month": {
+                      "type": "number",
+                      "description": "Month"
+                    },
+                    "actual_value": {
+                      "type": "number",
+                      "description": "Actual value"
+                    },
+                    "threshold": {
+                      "type": "number",
+                      "description": "Threshold"
+                    }
+                  }
+                }
+              }
+            },
+            "reserve_account_chart": {
+              "type": "array",
+              "description": "Reserve account chart data",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Year"
+                  },
+                  "month": {
+                    "type": "number",
+                    "description": "Month"
+                  },
+                  "balance": {
+                    "type": "number",
+                    "description": "Balance"
+                  },
+                  "target": {
+                    "type": "number",
+                    "description": "Target balance"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "leverage": {
+      "type": "object",
+      "description": "Leverage engine results",
+      "properties": {
+        "facilities": {
+          "type": "array",
+          "description": "Debt facilities",
+          "items": {
+            "type": "object",
+            "properties": {
+              "facility_id": {
+                "type": "string",
+                "description": "Unique identifier for the facility"
+              },
+              "facility_type": {
+                "type": "string",
+                "description": "Type of facility (nav_line, subscription_line)"
+              },
+              "max_amount": {
+                "type": "number",
+                "description": "Maximum facility amount"
+              },
+              "interest_rate": {
+                "type": "number",
+                "description": "Annual interest rate (as a decimal)"
+              },
+              "commitment_fee_bps": {
+                "type": "number",
+                "description": "Commitment fee on undrawn balance (basis points)"
+              },
+              "term_years": {
+                "type": "number",
+                "description": "Term of the facility in years"
+              },
+              "advance_rate": {
+                "type": "number",
+                "description": "Maximum advance rate (for NAV lines)"
+              },
+              "current_balance": {
+                "type": "number",
+                "description": "Current outstanding balance"
+              },
+              "available_amount": {
+                "type": "number",
+                "description": "Available amount to draw"
+              },
+              "inception_date": {
+                "type": ["string", "null"],
+                "format": "date-time",
+                "description": "Date when the facility was first drawn"
+              },
+              "maturity_date": {
+                "type": ["string", "null"],
+                "format": "date-time",
+                "description": "Date when the facility matures"
+              }
+            }
+          }
+        },
+        "draws": {
+          "type": "array",
+          "description": "Facility draws",
+          "items": {
+            "type": "object",
+            "properties": {
+              "facility_id": {
+                "type": "string",
+                "description": "Facility ID"
+              },
+              "date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date of the draw"
+              },
+              "amount": {
+                "type": "number",
+                "description": "Amount drawn"
+              },
+              "year": {
+                "type": "number",
+                "description": "Simulation year"
+              },
+              "month": {
+                "type": "integer",
+                "description": "Month (1-12)"
+              },
+              "purpose": {
+                "type": "string",
+                "description": "Purpose of the draw"
+              }
+            }
+          }
+        },
+        "repayments": {
+          "type": "array",
+          "description": "Facility repayments",
+          "items": {
+            "type": "object",
+            "properties": {
+              "facility_id": {
+                "type": "string",
+                "description": "Facility ID"
+              },
+              "date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date of the repayment"
+              },
+              "amount": {
+                "type": "number",
+                "description": "Amount repaid"
+              },
+              "year": {
+                "type": "number",
+                "description": "Simulation year"
+              },
+              "month": {
+                "type": "integer",
+                "description": "Month (1-12)"
+              },
+              "source": {
+                "type": "string",
+                "description": "Source of repayment funds"
+              }
+            }
+          }
+        },
+        "interest_payments": {
+          "type": "array",
+          "description": "Interest payments",
+          "items": {
+            "type": "object",
+            "properties": {
+              "facility_id": {
+                "type": "string",
+                "description": "Facility ID"
+              },
+              "period_start": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Start of interest period"
+              },
+              "period_end": {
+                "type": "string",
+                "format": "date-time",
+                "description": "End of interest period"
+              },
+              "amount": {
+                "type": "number",
+                "description": "Interest amount"
+              },
+              "year": {
+                "type": "number",
+                "description": "Simulation year"
+              },
+              "month": {
+                "type": "integer",
+                "description": "Month (1-12)"
+              },
+              "interest_rate": {
+                "type": "number",
+                "description": "Interest rate applied"
+              },
+              "average_balance": {
+                "type": "number",
+                "description": "Average balance during the period"
+              }
+            }
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "description": "Leverage metrics",
+          "properties": {
+            "total_debt": {
+              "type": "number",
+              "description": "Total debt outstanding"
+            },
+            "total_available": {
+              "type": "number",
+              "description": "Total available debt capacity"
+            },
+            "total_interest_paid": {
+              "type": "number",
+              "description": "Total interest paid"
+            },
+            "total_commitment_fees_paid": {
+              "type": "number",
+              "description": "Total commitment fees paid"
+            },
+            "weighted_avg_interest_rate": {
+              "type": "number",
+              "description": "Weighted average interest rate"
+            },
+            "leverage_ratio": {
+              "type": "number",
+              "description": "Leverage ratio (debt / NAV)"
+            },
+            "debt_service_coverage_ratio": {
+              "type": "number",
+              "description": "Debt service coverage ratio"
+            },
+            "interest_coverage_ratio": {
+              "type": "number",
+              "description": "Interest coverage ratio"
+            },
+            "loan_to_value_ratio": {
+              "type": "number",
+              "description": "Loan-to-value ratio"
+            }
+          }
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Visualization data for leverage",
+          "properties": {
+            "leverage_timeline": {
+              "type": "array",
+              "description": "Timeline of leverage",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "month": {
+                    "type": "integer",
+                    "description": "Month (1-12)"
+                  },
+                  "total_debt": {
+                    "type": "number",
+                    "description": "Total debt outstanding"
+                  },
+                  "nav": {
+                    "type": "number",
+                    "description": "Net asset value"
+                  },
+                  "leverage_ratio": {
+                    "type": "number",
+                    "description": "Leverage ratio (debt / NAV)"
+                  }
+                }
+              }
+            },
+            "facility_utilization": {
+              "type": "array",
+              "description": "Facility utilization over time",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "month": {
+                    "type": "integer",
+                    "description": "Month (1-12)"
+                  },
+                  "facility_id": {
+                    "type": "string",
+                    "description": "Facility ID"
+                  },
+                  "facility_type": {
+                    "type": "string",
+                    "description": "Facility type"
+                  },
+                  "current_balance": {
+                    "type": "number",
+                    "description": "Current balance"
+                  },
+                  "available_amount": {
+                    "type": "number",
+                    "description": "Available amount"
+                  },
+                  "utilization_percentage": {
+                    "type": "number",
+                    "description": "Utilization percentage"
+                  }
+                }
+              }
+            },
+            "interest_expense": {
+              "type": "array",
+              "description": "Interest expense over time",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "number",
+                    "description": "Simulation year"
+                  },
+                  "month": {
+                    "type": "integer",
+                    "description": "Month (1-12)"
+                  },
+                  "interest_amount": {
+                    "type": "number",
+                    "description": "Interest amount"
+                  },
+                  "commitment_fees": {
+                    "type": "number",
+                    "description": "Commitment fees"
+                  },
+                  "total_expense": {
+                    "type": "number",
+                    "description": "Total expense"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
-  "required": ["simulation_id", "run_timestamp", "config", "metrics", "tls_data", "capital_allocation", "loans", "loan_portfolio"],
+  "required": ["simulation_id", "run_timestamp", "config", "metrics", "tls_data", "capital_allocation", "loans", "loan_portfolio", "tranches"],
   "additionalProperties": true
 }

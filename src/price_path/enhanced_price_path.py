@@ -34,7 +34,7 @@ def simulate_gbm(
     rng: Optional[np.random.Generator] = None,
 ) -> np.ndarray:
     """
-    Simulate a price path using Geometric Brownian Motion.
+    Simulate a price path using Geometric Brownian Motion with production-level safeguards.
 
     Args:
         base_rate: Base appreciation rate (annual)
@@ -47,9 +47,17 @@ def simulate_gbm(
     Returns:
         Array of price indices (starting at 1.0)
     """
+    # Production-level parameter validation and bounds
+    base_rate = np.clip(base_rate, -0.5, 2.0)  # Cap at -50% to +200% annual
+    volatility = np.clip(volatility, 0.001, 1.0)  # Cap volatility at 100% annual
+
     # Convert annual parameters to time step parameters
     mu = base_rate * dt
     sigma = volatility * np.sqrt(dt)
+
+    # Additional safeguards for time step parameters
+    mu = np.clip(mu, -0.5 * dt, 2.0 * dt)  # Ensure reasonable per-period returns
+    sigma = np.clip(sigma, 0.001 * np.sqrt(dt), 1.0 * np.sqrt(dt))
 
     # Generate random shocks if not provided
     if random_shocks is None:
@@ -57,14 +65,34 @@ def simulate_gbm(
             rng = np.random.default_rng()
         random_shocks = rng.normal(0, 1, num_steps)
 
-    # Calculate returns
+    # Clip random shocks to prevent extreme outliers
+    random_shocks = np.clip(random_shocks, -5.0, 5.0)  # 5-sigma limit
+
+    # Calculate returns with overflow protection
     returns = mu + sigma * random_shocks
 
-    # Calculate cumulative returns
-    price_path = np.cumprod(1 + returns)
+    # Clip returns to prevent mathematical overflow
+    returns = np.clip(returns, -0.9, 3.0)  # Max 300% gain, max 90% loss per period
 
-    # Insert initial value (1.0)
-    price_path = np.insert(price_path, 0, 1.0)
+    # Calculate cumulative returns with overflow monitoring
+    price_path = np.ones(num_steps + 1)
+
+    for i in range(num_steps):
+        # Apply return with overflow check
+        new_value = price_path[i] * (1 + returns[i])
+
+        # Check for overflow/underflow
+        if np.isfinite(new_value) and new_value > 0 and new_value < 1e6:
+            price_path[i + 1] = new_value
+        else:
+            # Cap at reasonable maximum (1000x appreciation over full period)
+            price_path[i + 1] = min(price_path[i] * 1.1, 1000.0)
+
+    # Final validation - ensure all values are finite and positive
+    price_path = np.clip(price_path, 0.01, 1000.0)  # Min 1% of original, max 1000x
+
+    # Replace any remaining invalid values
+    price_path = np.where(np.isfinite(price_path), price_path, 1.0)
 
     return price_path
 
@@ -339,7 +367,7 @@ async def simulate_enhanced_price_paths(context: SimulationContext) -> None:
         tls_manager = get_tls_manager()
 
         # Load TLS data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data(simulation_id=context.run_id)
 
         # Get suburbs from TLS manager
@@ -445,6 +473,7 @@ async def simulate_enhanced_price_paths(context: SimulationContext) -> None:
             property_price_paths=property_price_paths,
             price_path_stats=price_path_stats,
             time_step=time_step,
+            context=context,
             market_regimes=getattr(context, "market_regimes", None),
             tls_manager=tls_manager,
         )
@@ -955,28 +984,47 @@ async def generate_suburb_price_paths(
         # Calculate employment factor (0.95-1.05)
         employment_factor = 0.95 + employment_growth * 5.0
 
-        # Calculate combined factor
+        # Calculate combined factor with production-level bounds
         combined_factor = appreciation_factor * location_factor * employment_factor
+        combined_factor = np.clip(combined_factor, 0.1, 5.0)  # Cap between 10% and 500%
 
         # Generate suburb-specific variation
         suburb_rng = get_rng(f"price_path_suburb_{suburb_id}", 0)
 
-        # Base variation on risk factor
+        # Base variation on risk factor with bounds
         suburb_volatility = suburb_variation * risk_factor
+        suburb_volatility = np.clip(suburb_volatility, 0.001, 0.5)  # Cap volatility
 
-        # Generate random shocks
+        # Generate random shocks with bounds
         suburb_shocks = suburb_rng.normal(0, suburb_volatility, size=num_steps)
+        suburb_shocks = np.clip(suburb_shocks, -3.0, 3.0)  # 3-sigma limit
 
         # Apply variation to zone path
         suburb_path = zone_path.copy()
 
-        # Apply combined factor to overall growth
-        suburb_path = 1.0 + (suburb_path - 1.0) * combined_factor
+        # Apply combined factor to overall growth with overflow protection
+        growth_adjustment = (suburb_path - 1.0) * combined_factor
+        growth_adjustment = np.clip(growth_adjustment, -0.8, 10.0)  # Reasonable bounds
+        suburb_path = 1.0 + growth_adjustment
 
-        # Apply random shocks
+        # Apply random shocks with overflow monitoring
         for t in range(1, len(suburb_path)):
-            # Apply multiplicative shock
-            suburb_path[t] *= (1.0 + suburb_shocks[t-1])
+            # Apply multiplicative shock with bounds checking
+            shock_factor = 1.0 + suburb_shocks[t-1]
+            shock_factor = np.clip(shock_factor, 0.5, 2.0)  # Max 100% gain/50% loss per period
+
+            new_value = suburb_path[t] * shock_factor
+
+            # Check for overflow and apply reasonable bounds
+            if np.isfinite(new_value) and new_value > 0 and new_value < 1000.0:
+                suburb_path[t] = new_value
+            else:
+                # Cap at reasonable maximum
+                suburb_path[t] = min(suburb_path[t-1] * 1.1, 1000.0)
+
+        # Final validation for suburb path
+        suburb_path = np.clip(suburb_path, 0.01, 1000.0)
+        suburb_path = np.where(np.isfinite(suburb_path), suburb_path, 1.0)
 
         # Store suburb price path
         suburb_price_paths[suburb_id] = suburb_path
@@ -1121,23 +1169,41 @@ async def generate_property_price_paths(
             land_size_factor = 1.0
             age_factor = 1.0
 
-        # Calculate combined factor
+        # Calculate combined factor with production-level bounds
         combined_factor = type_factor * bedroom_factor * bathroom_factor * land_size_factor * age_factor
+        combined_factor = np.clip(combined_factor, 0.2, 3.0)  # Cap between 20% and 300%
 
-        # Generate property-specific variation
+        # Generate property-specific variation with bounds
         property_rng = get_rng(f"price_path_property_{property_id}", 0)
         property_shocks = property_rng.normal(0, property_variation, size=num_steps)
+        property_shocks = np.clip(property_shocks, -2.0, 2.0)  # 2-sigma limit
 
         # Apply variation to base path
         property_path = base_path.copy()
 
-        # Apply combined factor to overall growth
-        property_path = 1.0 + (property_path - 1.0) * combined_factor
+        # Apply combined factor to overall growth with overflow protection
+        growth_adjustment = (property_path - 1.0) * combined_factor
+        growth_adjustment = np.clip(growth_adjustment, -0.7, 8.0)  # Reasonable bounds
+        property_path = 1.0 + growth_adjustment
 
-        # Apply random shocks
+        # Apply random shocks with overflow monitoring
         for t in range(1, len(property_path)):
-            # Apply multiplicative shock
-            property_path[t] *= (1.0 + property_shocks[t-1])
+            # Apply multiplicative shock with bounds checking
+            shock_factor = 1.0 + property_shocks[t-1]
+            shock_factor = np.clip(shock_factor, 0.7, 1.5)  # Max 50% gain/30% loss per period
+
+            new_value = property_path[t] * shock_factor
+
+            # Check for overflow and apply reasonable bounds
+            if np.isfinite(new_value) and new_value > 0 and new_value < 1000.0:
+                property_path[t] = new_value
+            else:
+                # Cap at reasonable maximum
+                property_path[t] = min(property_path[t-1] * 1.05, 1000.0)
+
+        # Final validation for property path
+        property_path = np.clip(property_path, 0.01, 1000.0)
+        property_path = np.where(np.isfinite(property_path), property_path, 1.0)
 
         # Store property price path
         property_price_paths[property_id] = property_path
@@ -1181,28 +1247,62 @@ def calculate_enhanced_price_path_statistics(
     Returns:
         Dictionary containing price path statistics
     """
-    # Calculate zone statistics
+    # Calculate zone statistics with production-level safeguards
     zone_stats = {}
     for zone, price_path in zone_price_paths.items():
-        # Calculate returns
-        returns = np.diff(price_path) / price_path[:-1]
+        # Validate price path
+        if len(price_path) < 2:
+            continue
 
-        # Calculate CAGR
+        # Ensure all values are finite and positive
+        price_path = np.where(np.isfinite(price_path) & (price_path > 0), price_path, 1.0)
+
+        # Calculate returns with overflow protection
+        price_path_safe = np.where(price_path[:-1] > 0, price_path[:-1], 1.0)
+        returns = np.diff(price_path) / price_path_safe
+
+        # Clip returns to prevent extreme values
+        returns = np.clip(returns, -0.9, 3.0)
+        returns = np.where(np.isfinite(returns), returns, 0.0)
+
+        # Calculate CAGR with safeguards
         years = len(price_path) * dt
-        cagr = (price_path[-1] / price_path[0]) ** (1 / years) - 1
+        if years > 0 and price_path[0] > 0 and price_path[-1] > 0:
+            cagr = (price_path[-1] / price_path[0]) ** (1 / years) - 1
+            cagr = np.clip(cagr, -0.5, 2.0)  # Cap between -50% and +200% annual
+        else:
+            cagr = 0.0
 
-        # Calculate volatility
-        volatility = np.std(returns) / np.sqrt(dt)
+        # Calculate volatility with safeguards
+        if len(returns) > 0 and dt > 0:
+            volatility = np.std(returns) / np.sqrt(dt)
+            volatility = np.clip(volatility, 0.0, 2.0)  # Cap at 200% annual volatility
+        else:
+            volatility = 0.0
 
         # Calculate maximum drawdown
         max_drawdown = calculate_max_drawdown(price_path)
 
-        # Calculate Sharpe ratio
+        # Calculate Sharpe ratio with safeguards
         risk_free_rate = 0.02  # Assume 2% risk-free rate
-        sharpe_ratio = (cagr - risk_free_rate) / volatility if volatility > 0 else 0
+        if volatility > 0.001:  # Avoid division by very small numbers
+            sharpe_ratio = (cagr - risk_free_rate) / volatility
+            sharpe_ratio = np.clip(sharpe_ratio, -10.0, 10.0)  # Reasonable bounds
+        else:
+            sharpe_ratio = 0.0
 
-        # Calculate final appreciation
-        final_appreciation = price_path[-1] / price_path[0] - 1
+        # Calculate final appreciation with safeguards
+        if price_path[0] > 0:
+            final_appreciation = price_path[-1] / price_path[0] - 1
+            final_appreciation = np.clip(final_appreciation, -0.9, 50.0)  # Reasonable bounds
+        else:
+            final_appreciation = 0.0
+
+        # Ensure all values are finite
+        cagr = float(cagr) if np.isfinite(cagr) else 0.0
+        volatility = float(volatility) if np.isfinite(volatility) else 0.0
+        sharpe_ratio = float(sharpe_ratio) if np.isfinite(sharpe_ratio) else 0.0
+        final_appreciation = float(final_appreciation) if np.isfinite(final_appreciation) else 0.0
 
         # Store statistics
         zone_stats[zone] = {
@@ -1318,7 +1418,7 @@ def calculate_enhanced_price_path_statistics(
 
 def calculate_max_drawdown(price_path: np.ndarray) -> float:
     """
-    Calculate the maximum drawdown of a price path.
+    Calculate the maximum drawdown of a price path with production-level safeguards.
 
     Args:
         price_path: Array of price indices
@@ -1326,16 +1426,34 @@ def calculate_max_drawdown(price_path: np.ndarray) -> float:
     Returns:
         Maximum drawdown (as a positive fraction)
     """
-    # Calculate running maximum
+    # Validate input and handle edge cases
+    if len(price_path) == 0:
+        return 0.0
+
+    # Ensure all values are finite and positive
+    price_path = np.where(np.isfinite(price_path) & (price_path > 0), price_path, 1.0)
+
+    # Calculate running maximum with overflow protection
     running_max = np.maximum.accumulate(price_path)
 
-    # Calculate drawdown
+    # Ensure running_max is never zero to prevent division by zero
+    running_max = np.where(running_max > 0, running_max, 1.0)
+
+    # Calculate drawdown with overflow protection
     drawdown = (running_max - price_path) / running_max
+
+    # Ensure drawdown values are finite and within reasonable bounds
+    drawdown = np.where(np.isfinite(drawdown), drawdown, 0.0)
+    drawdown = np.clip(drawdown, 0.0, 1.0)  # Drawdown cannot exceed 100%
 
     # Get maximum drawdown
     max_drawdown = np.max(drawdown)
 
-    return max_drawdown
+    # Final validation
+    if not np.isfinite(max_drawdown) or max_drawdown < 0:
+        max_drawdown = 0.0
+
+    return float(max_drawdown)
 
 
 def generate_enhanced_price_path_visualization(
@@ -1344,6 +1462,7 @@ def generate_enhanced_price_path_visualization(
     property_price_paths: Dict[str, np.ndarray],
     price_path_stats: Dict[str, Any],
     time_step: str,
+    context: SimulationContext,
     market_regimes: Optional[np.ndarray] = None,
     tls_manager: Any = None,
 ) -> Dict[str, Any]:
@@ -1462,12 +1581,17 @@ def generate_enhanced_price_path_visualization(
             if len(prop_path) == 0:
                 continue
 
-            # Get property zone
+            # Get property zone from loans
             property_zone = None
-            for loan in property_price_paths:
-                if loan.get("property_id") == property_id:
+            loans = getattr(context, "loans", [])
+            for loan in loans:
+                if isinstance(loan, dict) and loan.get("property_id") == property_id:
                     property_zone = loan.get("zone")
                     break
+
+            # Default to green if not found
+            if property_zone is None:
+                property_zone = "green"
 
             # Skip if property is not in current zone
             if property_zone != zone:

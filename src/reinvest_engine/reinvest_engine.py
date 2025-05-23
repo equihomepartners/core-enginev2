@@ -706,9 +706,25 @@ def get_target_allocations(context: SimulationContext) -> Dict[str, float]:
     config = context.config
 
     # Get zone allocations from config
-    zone_allocations = getattr(config, "zone_allocations", {})
+    zone_allocations = getattr(config, "zone_allocations", None)
 
-    # Create allocations dictionary
+    # Convert ZoneAllocations object to dictionary if needed
+    if zone_allocations:
+        if hasattr(zone_allocations, 'dict'):
+            # It's a Pydantic model, convert to dict
+            zone_allocations = zone_allocations.dict()
+        elif hasattr(zone_allocations, 'green'):
+            # It's an object with attributes, convert to dict
+            zone_allocations = {
+                "green": zone_allocations.green,
+                "orange": zone_allocations.orange,
+                "red": zone_allocations.red,
+            }
+    else:
+        # Use default allocations
+        zone_allocations = {}
+
+    # Create allocations dictionary with fallback defaults
     allocations = {
         "green": zone_allocations.get("green", 0.6),
         "orange": zone_allocations.get("orange", 0.3),

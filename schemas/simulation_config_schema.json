@@ -10,6 +10,241 @@
       "minimum": 1000000,
       "default": 100000000
     },
+    "tranche_manager": {
+      "type": "object",
+      "description": "Tranche manager parameters",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether to enable tranche management",
+          "default": false
+        },
+        "tranches": {
+          "type": "array",
+          "description": "Tranches in the fund",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Tranche name"
+              },
+              "size": {
+                "type": "number",
+                "description": "Tranche size in dollars"
+              },
+              "target_return": {
+                "type": "number",
+                "description": "Target return for the tranche (0-1)",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "priority": {
+                "type": "integer",
+                "description": "Payment priority (lower numbers get paid first)",
+                "minimum": 1
+              },
+              "type": {
+                "type": "string",
+                "description": "Tranche type",
+                "enum": ["senior_debt", "mezzanine", "equity", "preferred_equity"]
+              },
+              "interest_rate": {
+                "type": "number",
+                "description": "Interest rate for debt tranches (0-1)",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "payment_frequency": {
+                "type": "string",
+                "description": "Payment frequency for the tranche",
+                "enum": ["monthly", "quarterly", "semi_annual", "annual"],
+                "default": "quarterly"
+              },
+              "amortization": {
+                "type": "boolean",
+                "description": "Whether the tranche amortizes",
+                "default": false
+              },
+              "amortization_schedule": {
+                "type": "string",
+                "description": "Amortization schedule type",
+                "enum": ["straight_line", "interest_only", "balloon"],
+                "default": "interest_only"
+              },
+              "term_years": {
+                "type": "number",
+                "description": "Term in years",
+                "minimum": 0
+              },
+              "waterfall_rules": {
+                "type": "object",
+                "description": "Waterfall rules for the tranche",
+                "properties": {
+                  "hurdle_rate": {
+                    "type": "number",
+                    "description": "Hurdle rate for the tranche (0-1)",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "carried_interest_rate": {
+                    "type": "number",
+                    "description": "Carried interest rate for the tranche (0-1)",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "catch_up_rate": {
+                    "type": "number",
+                    "description": "Catch-up rate for the tranche (0-1)",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "allocation_rules": {
+                "type": "object",
+                "description": "Allocation rules for the tranche",
+                "properties": {
+                  "zone_allocations": {
+                    "type": "object",
+                    "description": "Target zone allocations for the tranche",
+                    "properties": {
+                      "green": {
+                        "type": "number",
+                        "description": "Green zone allocation (0-1)",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "orange": {
+                        "type": "number",
+                        "description": "Orange zone allocation (0-1)",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "red": {
+                        "type": "number",
+                        "description": "Red zone allocation (0-1)",
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "ltv_constraints": {
+                    "type": "object",
+                    "description": "LTV constraints for the tranche",
+                    "properties": {
+                      "min_ltv": {
+                        "type": "number",
+                        "description": "Minimum LTV ratio (0-1)",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "max_ltv": {
+                        "type": "number",
+                        "description": "Maximum LTV ratio (0-1)",
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "required": ["name", "size", "priority", "type"]
+          }
+        },
+        "reserve_account": {
+          "type": "object",
+          "description": "Reserve account parameters",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether to enable reserve account",
+              "default": false
+            },
+            "target_percentage": {
+              "type": "number",
+              "description": "Target reserve as percentage of senior debt (0-1)",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.05
+            },
+            "initial_funding": {
+              "type": "number",
+              "description": "Initial funding as percentage of senior debt (0-1)",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.03
+            },
+            "replenishment_rate": {
+              "type": "number",
+              "description": "Rate at which reserve is replenished (0-1)",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.01
+            }
+          }
+        },
+        "overcollateralization_test": {
+          "type": "object",
+          "description": "Overcollateralization test parameters",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether to enable overcollateralization test",
+              "default": false
+            },
+            "threshold": {
+              "type": "number",
+              "description": "Overcollateralization threshold",
+              "minimum": 1,
+              "default": 1.2
+            },
+            "test_frequency": {
+              "type": "string",
+              "description": "Test frequency",
+              "enum": ["monthly", "quarterly", "semi_annual", "annual"],
+              "default": "quarterly"
+            },
+            "cure_period_months": {
+              "type": "integer",
+              "description": "Cure period in months",
+              "minimum": 0,
+              "default": 3
+            }
+          }
+        },
+        "interest_coverage_test": {
+          "type": "object",
+          "description": "Interest coverage test parameters",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether to enable interest coverage test",
+              "default": false
+            },
+            "threshold": {
+              "type": "number",
+              "description": "Interest coverage threshold",
+              "minimum": 1,
+              "default": 1.5
+            },
+            "test_frequency": {
+              "type": "string",
+              "description": "Test frequency",
+              "enum": ["monthly", "quarterly", "semi_annual", "annual"],
+              "default": "quarterly"
+            },
+            "cure_period_months": {
+              "type": "integer",
+              "description": "Cure period in months",
+              "minimum": 0,
+              "default": 3
+            }
+          }
+        }
+      }
+    },
     "fund_term": {
       "type": "integer",
       "description": "Fund term in years",
@@ -70,6 +305,294 @@
       "minimum": 0,
       "maximum": 1,
       "default": 0.0
+    },
+    "fee_engine": {
+      "type": "object",
+      "description": "Fee engine parameters",
+      "properties": {
+        "origination_fee_rate": {
+          "type": "number",
+          "description": "Origination fee rate as percentage of loan amount (0-1)",
+          "minimum": 0,
+          "maximum": 0.1,
+          "default": 0.01
+        },
+        "annual_fund_expenses": {
+          "type": "number",
+          "description": "Annual fund expenses as percentage of fund size (0-1)",
+          "minimum": 0,
+          "maximum": 0.05,
+          "default": 0.005
+        },
+        "fixed_annual_expenses": {
+          "type": "number",
+          "description": "Fixed annual expenses in dollars",
+          "minimum": 0,
+          "default": 100000
+        },
+        "management_fee_schedule": {
+          "type": "array",
+          "description": "Schedule of management fee rates by year",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "integer",
+                "description": "Year (0-based)",
+                "minimum": 0
+              },
+              "rate": {
+                "type": "number",
+                "description": "Management fee rate (0-1)",
+                "minimum": 0,
+                "maximum": 0.05
+              }
+            },
+            "required": ["year", "rate"]
+          },
+          "default": []
+        },
+        "expense_growth_rate": {
+          "type": "number",
+          "description": "Annual growth rate for expenses (0-1)",
+          "minimum": 0,
+          "maximum": 0.1,
+          "default": 0.02
+        },
+        "acquisition_fee_rate": {
+          "type": "number",
+          "description": "Acquisition fee rate as percentage of property value (0-1)",
+          "minimum": 0,
+          "maximum": 0.05,
+          "default": 0.0
+        },
+        "disposition_fee_rate": {
+          "type": "number",
+          "description": "Disposition fee rate as percentage of exit value (0-1)",
+          "minimum": 0,
+          "maximum": 0.05,
+          "default": 0.0
+        },
+        "setup_costs": {
+          "type": "number",
+          "description": "One-time setup costs in dollars",
+          "minimum": 0,
+          "default": 250000
+        }
+      },
+      "additionalProperties": false
+    },
+    "cashflow_aggregator": {
+      "type": "object",
+      "description": "Cashflow aggregator parameters",
+      "properties": {
+        "time_granularity": {
+          "type": "string",
+          "description": "Time granularity for cashflow aggregation",
+          "enum": ["daily", "monthly", "quarterly", "yearly"],
+          "default": "yearly"
+        },
+        "include_loan_level_cashflows": {
+          "type": "boolean",
+          "description": "Whether to include loan-level cashflows in the results",
+          "default": true
+        },
+        "include_fund_level_cashflows": {
+          "type": "boolean",
+          "description": "Whether to include fund-level cashflows in the results",
+          "default": true
+        },
+        "include_stakeholder_cashflows": {
+          "type": "boolean",
+          "description": "Whether to include stakeholder-level cashflows in the results",
+          "default": true
+        },
+        "simple_interest_rate": {
+          "type": "number",
+          "description": "Simple interest rate for loans (0-1)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.05
+        },
+        "origination_fee_rate": {
+          "type": "number",
+          "description": "Origination fee rate (0-1)",
+          "minimum": 0,
+          "maximum": 0.1,
+          "default": 0.03
+        },
+        "appreciation_share_method": {
+          "type": "string",
+          "description": "Method for calculating appreciation share",
+          "enum": ["pro_rata_ltv", "tiered", "fixed"],
+          "default": "pro_rata_ltv"
+        },
+        "distribution_frequency": {
+          "type": "string",
+          "description": "Frequency of distributions to investors",
+          "enum": ["monthly", "quarterly", "semi_annual", "annual"],
+          "default": "annual"
+        },
+        "distribution_lag": {
+          "type": "integer",
+          "description": "Lag in months between cashflow receipt and distribution",
+          "minimum": 0,
+          "default": 0
+        },
+        "enable_parallel_processing": {
+          "type": "boolean",
+          "description": "Whether to enable parallel processing for loan-level cashflow calculations",
+          "default": true
+        },
+        "num_workers": {
+          "type": "integer",
+          "description": "Number of worker processes for parallel processing",
+          "minimum": 1,
+          "maximum": 32,
+          "default": 4
+        },
+        "enable_scenario_analysis": {
+          "type": "boolean",
+          "description": "Whether to enable scenario analysis",
+          "default": false
+        },
+        "scenarios": {
+          "type": "array",
+          "description": "Scenarios for scenario analysis",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Scenario name"
+              },
+              "description": {
+                "type": "string",
+                "description": "Scenario description"
+              },
+              "parameters": {
+                "type": "object",
+                "description": "Parameter overrides for the scenario"
+              }
+            },
+            "required": ["name", "parameters"]
+          },
+          "default": []
+        },
+        "enable_sensitivity_analysis": {
+          "type": "boolean",
+          "description": "Whether to enable sensitivity analysis",
+          "default": false
+        },
+        "sensitivity_parameters": {
+          "type": "array",
+          "description": "Parameters to vary for sensitivity analysis",
+          "items": {
+            "type": "object",
+            "properties": {
+              "parameter": {
+                "type": "string",
+                "description": "Parameter name"
+              },
+              "min_value": {
+                "type": "number",
+                "description": "Minimum value for the parameter"
+              },
+              "max_value": {
+                "type": "number",
+                "description": "Maximum value for the parameter"
+              },
+              "step_size": {
+                "type": "number",
+                "description": "Step size for the parameter"
+              }
+            },
+            "required": ["parameter", "min_value", "max_value", "step_size"]
+          },
+          "default": []
+        },
+        "enable_cashflow_metrics": {
+          "type": "boolean",
+          "description": "Whether to enable cashflow metrics calculation",
+          "default": true
+        },
+        "discount_rate": {
+          "type": "number",
+          "description": "Discount rate for DCF calculations (0-1)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.08
+        },
+        "enable_tax_impact_analysis": {
+          "type": "boolean",
+          "description": "Whether to enable tax impact analysis",
+          "default": false
+        },
+        "tax_rates": {
+          "type": "object",
+          "description": "Tax rates for different income types",
+          "properties": {
+            "ordinary_income": {
+              "type": "number",
+              "description": "Tax rate for ordinary income (0-1)",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.35
+            },
+            "capital_gains": {
+              "type": "number",
+              "description": "Tax rate for capital gains (0-1)",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.20
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "ordinary_income": 0.35,
+            "capital_gains": 0.20
+          }
+        },
+        "enable_reinvestment_modeling": {
+          "type": "boolean",
+          "description": "Whether to enable reinvestment modeling",
+          "default": true
+        },
+        "reinvestment_rate": {
+          "type": "number",
+          "description": "Rate of return on reinvested cashflows (0-1)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.05
+        },
+        "enable_liquidity_analysis": {
+          "type": "boolean",
+          "description": "Whether to enable liquidity analysis",
+          "default": true
+        },
+        "minimum_cash_reserve": {
+          "type": "number",
+          "description": "Minimum cash reserve as percentage of fund size (0-1)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.05
+        },
+        "enable_export": {
+          "type": "boolean",
+          "description": "Whether to enable export capabilities",
+          "default": false
+        },
+        "export_formats": {
+          "type": "array",
+          "description": "Export formats",
+          "items": {
+            "type": "string",
+            "enum": ["csv", "excel", "pdf", "json"]
+          },
+          "default": ["csv", "excel"]
+        }
+      },
+      "additionalProperties": false
     },
     "reinvestment_period": {
       "type": "integer",
@@ -925,6 +1448,411 @@
           "minimum": 0,
           "maximum": 1,
           "default": 0.1
+        }
+      },
+      "additionalProperties": true
+    },
+    "risk_metrics": {
+      "type": "object",
+      "description": "Risk metrics parameters",
+      "properties": {
+        "var_confidence_level": {
+          "type": "number",
+          "description": "Confidence level for Value at Risk (VaR) calculation (0-1)",
+          "minimum": 0.8,
+          "maximum": 0.99,
+          "default": 0.95
+        },
+        "risk_free_rate": {
+          "type": "number",
+          "description": "Risk-free rate for risk-adjusted return calculations (0-1)",
+          "minimum": 0,
+          "maximum": 0.1,
+          "default": 0.03
+        },
+        "benchmark_return": {
+          "type": "number",
+          "description": "Benchmark return for alpha and information ratio calculations (0-1)",
+          "minimum": 0,
+          "maximum": 0.2,
+          "default": 0.07
+        },
+        "min_acceptable_return": {
+          "type": "number",
+          "description": "Minimum acceptable return for Sortino ratio calculation (0-1)",
+          "minimum": 0,
+          "maximum": 0.1,
+          "default": 0.04
+        },
+        "stress_test_scenarios": {
+          "type": "array",
+          "description": "Stress test scenarios",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Scenario name"
+              },
+              "description": {
+                "type": "string",
+                "description": "Scenario description"
+              },
+              "property_value_shock": {
+                "type": "number",
+                "description": "Property value shock as percentage (-1 to 1)",
+                "minimum": -1,
+                "maximum": 1,
+                "default": -0.2
+              },
+              "interest_rate_shock": {
+                "type": "number",
+                "description": "Interest rate shock in percentage points (-0.1 to 0.1)",
+                "minimum": -0.1,
+                "maximum": 0.1,
+                "default": 0.02
+              },
+              "default_rate_shock": {
+                "type": "number",
+                "description": "Default rate shock as multiplier (0-10)",
+                "minimum": 0,
+                "maximum": 10,
+                "default": 2
+              },
+              "liquidity_shock": {
+                "type": "number",
+                "description": "Liquidity shock as percentage of expected liquidity (0-1)",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.5
+              }
+            },
+            "required": ["name"]
+          },
+          "default": [
+            {
+              "name": "mild_recession",
+              "description": "Mild recession scenario",
+              "property_value_shock": -0.1,
+              "interest_rate_shock": 0.01,
+              "default_rate_shock": 1.5,
+              "liquidity_shock": 0.3
+            },
+            {
+              "name": "severe_recession",
+              "description": "Severe recession scenario",
+              "property_value_shock": -0.3,
+              "interest_rate_shock": 0.03,
+              "default_rate_shock": 3,
+              "liquidity_shock": 0.7
+            },
+            {
+              "name": "financial_crisis",
+              "description": "Financial crisis scenario",
+              "property_value_shock": -0.5,
+              "interest_rate_shock": 0.05,
+              "default_rate_shock": 5,
+              "liquidity_shock": 0.9
+            }
+          ]
+        },
+        "monte_carlo_simulations": {
+          "type": "integer",
+          "description": "Number of Monte Carlo simulations for risk metrics",
+          "minimum": 0,
+          "maximum": 10000,
+          "default": 1000
+        },
+        "tail_risk_threshold": {
+          "type": "number",
+          "description": "Threshold for tail risk calculation (0-1)",
+          "minimum": 0,
+          "maximum": 0.5,
+          "default": 0.05
+        },
+        "enable_sensitivity_analysis": {
+          "type": "boolean",
+          "description": "Whether to enable sensitivity analysis",
+          "default": true
+        },
+        "sensitivity_parameters": {
+          "type": "array",
+          "description": "Parameters to analyze in sensitivity analysis",
+          "items": {
+            "type": "string",
+            "enum": [
+              "interest_rate",
+              "property_value_growth",
+              "default_rate",
+              "prepayment_rate",
+              "ltv_ratio",
+              "leverage_ratio",
+              "management_fee_rate",
+              "carried_interest_rate",
+              "hurdle_rate"
+            ]
+          },
+          "default": [
+            "interest_rate",
+            "property_value_growth",
+            "default_rate",
+            "ltv_ratio"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "leverage_engine": {
+      "type": "object",
+      "description": "Leverage engine parameters",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether to enable leverage",
+          "default": false
+        },
+        "green_sleeve": {
+          "type": "object",
+          "description": "NAV line facility parameters",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether to enable NAV line facility",
+              "default": false
+            },
+            "max_mult": {
+              "type": "number",
+              "description": "Maximum facility size as multiple of fund size",
+              "minimum": 0,
+              "maximum": 5,
+              "default": 1.5
+            },
+            "spread_bps": {
+              "type": "number",
+              "description": "Interest rate spread in basis points",
+              "minimum": 0,
+              "maximum": 1000,
+              "default": 275
+            },
+            "commitment_fee_bps": {
+              "type": "number",
+              "description": "Commitment fee on undrawn balance in basis points",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 50
+            },
+            "advance_rate": {
+              "type": "number",
+              "description": "Maximum advance rate against NAV",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.75
+            },
+            "min_dscr": {
+              "type": "number",
+              "description": "Minimum debt service coverage ratio",
+              "minimum": 0,
+              "default": 1.2
+            },
+            "max_ltv": {
+              "type": "number",
+              "description": "Maximum loan-to-value ratio",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.65
+            },
+            "term_years": {
+              "type": "number",
+              "description": "Term of the facility in years",
+              "minimum": 0,
+              "maximum": 30,
+              "default": 5
+            },
+            "amortization_years": {
+              "type": "number",
+              "description": "Amortization period in years",
+              "minimum": 0,
+              "maximum": 30,
+              "default": 0
+            },
+            "interest_only_period": {
+              "type": "number",
+              "description": "Interest-only period in years",
+              "minimum": 0,
+              "maximum": 30,
+              "default": 5
+            },
+            "prepayment_penalty": {
+              "type": "number",
+              "description": "Prepayment penalty as percentage of prepaid amount",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.01
+            },
+            "prepayment_lockout": {
+              "type": "number",
+              "description": "Prepayment lockout period in years",
+              "minimum": 0,
+              "maximum": 10,
+              "default": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "ramp_line": {
+          "type": "object",
+          "description": "Subscription line facility parameters",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether to enable subscription line facility",
+              "default": false
+            },
+            "limit_pct_commit": {
+              "type": "number",
+              "description": "Maximum facility size as percentage of commitments",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.15
+            },
+            "spread_bps": {
+              "type": "number",
+              "description": "Interest rate spread in basis points",
+              "minimum": 0,
+              "maximum": 1000,
+              "default": 300
+            },
+            "commitment_fee_bps": {
+              "type": "number",
+              "description": "Commitment fee on undrawn balance in basis points",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 50
+            },
+            "draw_period_months": {
+              "type": "number",
+              "description": "Draw period in months",
+              "minimum": 0,
+              "maximum": 60,
+              "default": 24
+            },
+            "term_months": {
+              "type": "number",
+              "description": "Term of the facility in months",
+              "minimum": 0,
+              "maximum": 60,
+              "default": 36
+            }
+          },
+          "additionalProperties": false
+        },
+        "interest_rate_model": {
+          "type": "object",
+          "description": "Interest rate model parameters",
+          "properties": {
+            "base_rate_initial": {
+              "type": "number",
+              "description": "Initial base rate (e.g., SOFR)",
+              "minimum": 0,
+              "maximum": 0.2,
+              "default": 0.0425
+            },
+            "volatility": {
+              "type": "number",
+              "description": "Volatility of base rate",
+              "minimum": 0,
+              "maximum": 0.1,
+              "default": 0.01
+            },
+            "mean_reversion": {
+              "type": "number",
+              "description": "Mean reversion speed",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.1
+            },
+            "long_term_mean": {
+              "type": "number",
+              "description": "Long-term mean for base rate",
+              "minimum": 0,
+              "maximum": 0.2,
+              "default": 0.04
+            }
+          },
+          "additionalProperties": false
+        },
+        "optimization": {
+          "type": "object",
+          "description": "Leverage optimization parameters",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether to enable leverage optimization",
+              "default": true
+            },
+            "target_leverage": {
+              "type": "number",
+              "description": "Target leverage ratio",
+              "minimum": 0,
+              "maximum": 5,
+              "default": 0.5
+            },
+            "max_leverage": {
+              "type": "number",
+              "description": "Maximum leverage ratio",
+              "minimum": 0,
+              "maximum": 5,
+              "default": 0.65
+            },
+            "deleveraging_threshold": {
+              "type": "number",
+              "description": "Leverage ratio threshold for deleveraging",
+              "minimum": 0,
+              "maximum": 5,
+              "default": 0.7
+            },
+            "min_cash_buffer": {
+              "type": "number",
+              "description": "Minimum cash buffer as percentage of debt service",
+              "minimum": 0,
+              "maximum": 5,
+              "default": 1.5
+            }
+          },
+          "additionalProperties": false
+        },
+        "stress_testing": {
+          "type": "object",
+          "description": "Stress testing parameters",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether to enable stress testing",
+              "default": true
+            },
+            "interest_rate_shock": {
+              "type": "number",
+              "description": "Interest rate shock in percentage points",
+              "minimum": 0,
+              "maximum": 0.1,
+              "default": 0.02
+            },
+            "nav_shock": {
+              "type": "number",
+              "description": "NAV shock as percentage of NAV",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.2
+            },
+            "liquidity_shock": {
+              "type": "number",
+              "description": "Liquidity shock as percentage of expected liquidity",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.5
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": true

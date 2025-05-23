@@ -1,0 +1,154 @@
+/* Blueprint CSS */
+@import "@blueprintjs/core/lib/css/blueprint.css";
+@import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+@import "@blueprintjs/select/lib/css/blueprint-select.css";
+@import "@blueprintjs/table/lib/css/table.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* CSS variables for Blueprint compatibility */
+  --color-midnight: #0A2463;
+  --color-steel: #1E3A8A;
+  --color-aqua: #0E7C7B;
+  --color-ribbon-red: #EF4444;
+  --color-zone-green: #10B981;
+  --color-zone-orange: #F59E0B;
+  --color-zone-red: #EF4444;
+}
+
+body {
+  @apply bg-neutral-50 text-neutral-900 font-sans antialiased;
+}
+
+/* Custom utility classes */
+@layer components {
+  /* Card components */
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6 border border-neutral-200;
+  }
+
+  .card-title {
+    @apply text-xl font-display font-semibold text-neutral-900 mb-4;
+  }
+
+  .card-subtitle {
+    @apply text-sm font-medium text-neutral-500 mb-4;
+  }
+
+  /* Button components */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-light focus:ring-primary;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary text-white hover:bg-secondary-light focus:ring-secondary;
+  }
+
+  .btn-outline {
+    @apply btn border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 focus:ring-primary;
+  }
+
+  .btn-danger {
+    @apply btn bg-status-error text-white hover:bg-opacity-90 focus:ring-status-error;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  /* Header and navigation */
+  .header-bar {
+    @apply bg-primary text-white h-16 flex items-center px-6 sticky top-0 z-10 shadow-md;
+  }
+
+  .nav-link {
+    @apply text-neutral-100 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors;
+  }
+
+  .nav-link-active {
+    @apply bg-primary-light text-white px-3 py-2 rounded-md text-sm font-medium;
+  }
+
+  /* Status indicators */
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-success {
+    @apply status-badge bg-status-success bg-opacity-10 text-status-success;
+  }
+
+  .status-warning {
+    @apply status-badge bg-status-warning bg-opacity-10 text-status-warning;
+  }
+
+  .status-error {
+    @apply status-badge bg-status-error bg-opacity-10 text-status-error;
+  }
+
+  .status-info {
+    @apply status-badge bg-status-info bg-opacity-10 text-status-info;
+  }
+
+  /* Zone indicators */
+  .zone-green {
+    @apply bg-status-success text-white;
+  }
+
+  .zone-orange {
+    @apply bg-status-warning text-white;
+  }
+
+  .zone-red {
+    @apply bg-status-error text-white;
+  }
+
+  /* Form elements */
+  .form-label {
+    @apply block text-sm font-medium text-neutral-700 mb-1;
+  }
+
+  .form-input {
+    @apply block w-full rounded-md border-neutral-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm;
+  }
+
+  .form-helper {
+    @apply mt-1 text-sm text-neutral-500;
+  }
+
+  .form-error {
+    @apply mt-1 text-sm text-status-error;
+  }
+
+  /* Data display */
+  .metric-card {
+    @apply bg-white p-6 rounded-lg border border-neutral-200 shadow-sm;
+  }
+
+  .metric-value {
+    @apply text-3xl font-semibold text-neutral-900;
+  }
+
+  .metric-label {
+    @apply text-sm font-medium text-neutral-500;
+  }
+
+  .metric-trend-up {
+    @apply text-status-success text-sm font-medium flex items-center;
+  }
+
+  .metric-trend-down {
+    @apply text-status-error text-sm font-medium flex items-center;
+  }
+}

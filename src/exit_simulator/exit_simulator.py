@@ -171,7 +171,8 @@ async def simulate_exits(context: SimulationContext) -> None:
         fund_term = getattr(config, "fund_term", 10)
 
         # Get time step
-        time_step = getattr(config.price_path, "time_step", "monthly")
+        price_path_config = getattr(config, "price_path", {})
+        time_step = getattr(price_path_config, "time_step", "monthly")
 
         # Determine number of time steps
         if time_step == "monthly":
@@ -213,7 +214,7 @@ async def simulate_exits(context: SimulationContext) -> None:
         tls_manager = get_tls_manager()
 
         # Load TLS data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data(simulation_id=context.run_id)
 
         # Initialize exits
@@ -226,12 +227,12 @@ async def simulate_exits(context: SimulationContext) -> None:
             property_id = loan.get("property_id", "")
             suburb_id = loan.get("suburb_id", "")
             zone = loan.get("zone", "green")
-            loan_amount = loan.get("loan_amount", 0.0)
+            loan_amount = loan.get("loan_size", 0.0)  # Use loan_size from loan generator
             property_value = loan.get("property_value", 0.0)
             ltv = loan.get("ltv", 0.0)
-            loan_term = loan.get("loan_term", 10.0)
+            loan_term = loan.get("term", 10.0)  # Use term from loan generator
             interest_rate = loan.get("interest_rate", 0.05)
-            origination_date = loan.get("origination_date", 0)
+            origination_date = loan.get("origination_year", 0)  # Use origination_year from loan generator
 
             # Skip if loan ID is missing
             if not loan_id:
@@ -288,9 +289,19 @@ async def simulate_exits(context: SimulationContext) -> None:
                 "exit_value": exit_value,
                 "appreciation_share_amount": appreciation_share_amount,
                 "total_return": exit_value + appreciation_share_amount,
-                "roi": (exit_value + appreciation_share_amount - loan_amount) / loan_amount,
-                "annualized_roi": ((exit_value + appreciation_share_amount) / loan_amount) ** (1 / exit_year) - 1 if exit_year > 0 else 0,
+                "roi": (exit_value + appreciation_share_amount - loan_amount) / loan_amount if loan_amount > 0 else 0.0,
+                "annualized_roi": ((exit_value + appreciation_share_amount) / loan_amount) ** (1 / exit_year) - 1 if exit_year > 0 and loan_amount > 0 else 0.0,
             })
+
+            # Update the loan object with exit information
+            loan["exit_month"] = exit_month
+            loan["exit_year"] = exit_year
+            loan["exit_type"] = exit_type.value
+            loan["exit_value"] = exit_value
+            loan["appreciation_share_amount"] = appreciation_share_amount
+            loan["total_return"] = exit_value + appreciation_share_amount
+            loan["roi"] = (exit_value + appreciation_share_amount - loan_amount) / loan_amount if loan_amount > 0 else 0.0
+            loan["annualized_roi"] = ((exit_value + appreciation_share_amount) / loan_amount) ** (1 / exit_year) - 1 if exit_year > 0 and loan_amount > 0 else 0.0
 
             # Report progress periodically
             if i % 100 == 0 or i == len(loans) - 1:
@@ -301,8 +312,12 @@ async def simulate_exits(context: SimulationContext) -> None:
                     message=f"Simulated exit for loan {i+1} of {len(loans)}",
                 )
 
-        # Store exits in context
+        # Store exits in context as both list and dictionary for compatibility
         context.exits = exits
+
+        # Also store as dictionary keyed by loan_id for cashflow aggregator
+        exits_dict = {exit["loan_id"]: exit for exit in exits}
+        context.exits_dict = exits_dict
 
         # Calculate exit statistics
         exit_stats = calculate_exit_statistics(exits, num_steps, dt)
@@ -437,12 +452,12 @@ def simulate_loan_exit(
     property_id = loan.get("property_id", "")
     suburb_id = loan.get("suburb_id", "")
     zone = loan.get("zone", "green")
-    loan_amount = loan.get("loan_amount", 0.0)
+    loan_amount = loan.get("loan_size", 0.0)  # Use loan_size from loan generator
     property_value = loan.get("property_value", 0.0)
     ltv = loan.get("ltv", 0.0)
-    loan_term = loan.get("loan_term", 10.0)
+    loan_term = loan.get("term", 10.0)  # Use term from loan generator
     interest_rate = loan.get("interest_rate", 0.05)
-    origination_date = loan.get("origination_date", 0)
+    origination_date = loan.get("origination_year", 0)  # Use origination_year from loan generator
 
     # Convert loan term to months
     loan_term_months = int(loan_term * 12)
@@ -507,7 +522,7 @@ def simulate_loan_exit(
         )
 
         # Calculate appreciation
-        appreciation = (current_value / property_value) - 1.0
+        appreciation = (current_value / property_value) - 1.0 if property_value > 0 else 0.0
 
         # Adjust price-based probability based on appreciation
         if appreciation > 0:
@@ -600,7 +615,7 @@ def determine_exit_type(
         Exit type
     """
     # Get loan details
-    loan_amount = loan.get("loan_amount", 0.0)
+    loan_amount = loan.get("loan_size", 0.0)  # Use loan_size from loan generator
     property_value = loan.get("property_value", 0.0)
     ltv = loan.get("ltv", 0.0)
     interest_rate = loan.get("interest_rate", 0.05)
@@ -678,7 +693,7 @@ def calculate_exit_value(
     property_id = loan.get("property_id", "")
     suburb_id = loan.get("suburb_id", "")
     zone = loan.get("zone", "green")
-    loan_amount = loan.get("loan_amount", 0.0)
+    loan_amount = loan.get("loan_size", 0.0)  # Use loan_size from loan generator
     property_value = loan.get("property_value", 0.0)
 
     # Get current property value
@@ -692,7 +707,7 @@ def calculate_exit_value(
     )
 
     # Calculate appreciation
-    appreciation = (current_value / property_value) - 1.0
+    appreciation = (current_value / property_value) - 1.0 if property_value > 0 else 0.0
 
     # Initialize exit value and appreciation share amount
     exit_value = loan_amount

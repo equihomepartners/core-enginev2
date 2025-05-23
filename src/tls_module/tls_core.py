@@ -18,8 +18,8 @@ from src.utils.error_handler import ValidationError, ErrorCode
 from src.api.websocket_manager import get_websocket_manager
 
 # Configure logging
-import logging
-logger = logging.getLogger(__name__)
+import structlog
+logger = structlog.get_logger(__name__)
 
 
 class MetricCategory(str, Enum):
@@ -154,8 +154,46 @@ class PropertyAttributes:
     risk_modifier: float  # Multiplier for suburb risk
     base_value: float  # Base property value
 
+    # Missing raw data fields
+    zoning_code: str = "R2"  # Residential zoning code (default: R2 - Low Density Residential)
+    days_on_market_last_sale: int = 30  # Days on market for last sale
+    last_sale_price: float = 0.0  # Last sale price (will default to base_value if not set)
+    hist_price_series: List[float] = field(default_factory=list)  # Monthly price index
+    hist_rent_series: List[float] = field(default_factory=list)  # Monthly rent values
+
     # Additional metrics specific to the property
     metrics: Dict[str, MetricValue] = field(default_factory=dict)
+
+    def __post_init__(self):
+        """Initialize default values and validate."""
+        # Set last_sale_price to base_value if not provided
+        if self.last_sale_price == 0.0:
+            self.last_sale_price = self.base_value
+
+        # Initialize empty price series if not provided
+        if not self.hist_price_series:
+            # Create 60 months (5 years) of price history with slight appreciation
+            base = self.base_value * 0.8  # Start at 80% of current value
+            monthly_growth = (self.base_value / base) ** (1/60) - 1  # Calculate monthly growth rate
+
+            # Add some random noise to the growth rate
+            self.hist_price_series = [
+                base * (1 + monthly_growth + random.uniform(-0.005, 0.005)) ** i
+                for i in range(60)
+            ]
+
+        # Initialize empty rent series if not provided
+        if not self.hist_rent_series:
+            # Create 60 months (5 years) of rent history
+            # Assume 3-5% gross rental yield
+            rental_yield = random.uniform(0.03, 0.05)
+            monthly_rent = (self.base_value * rental_yield) / 12
+
+            # Add some random noise to the rent
+            self.hist_rent_series = [
+                monthly_rent * (1 + random.uniform(-0.02, 0.02))
+                for _ in range(60)
+            ]
 
     def get_metric(self, metric_name: str) -> Optional[MetricValue]:
         """Get a property-specific metric."""
@@ -172,6 +210,42 @@ class PropertyAttributes:
     def calculate_value(self, appreciation_factor: float = 1.0) -> float:
         """Calculate the current property value with appreciation."""
         return self.base_value * appreciation_factor * self.appreciation_modifier
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        return {
+            "property_id": self.property_id,
+            "suburb_id": self.suburb_id,
+            "property_type": self.property_type,
+            "bedrooms": self.bedrooms,
+            "bathrooms": self.bathrooms,
+            "parking": self.parking,
+            "land_size": self.land_size,
+            "building_size": self.building_size,
+            "year_built": self.year_built,
+            "condition": self.condition,
+            "quality": self.quality,
+            "street_quality": self.street_quality,
+            "view_quality": self.view_quality,
+            "noise_level": self.noise_level,
+            "appreciation_modifier": self.appreciation_modifier,
+            "risk_modifier": self.risk_modifier,
+            "base_value": self.base_value,
+            # New fields
+            "zoning_code": self.zoning_code,
+            "days_on_market_last_sale": self.days_on_market_last_sale,
+            "last_sale_price": self.last_sale_price,
+            # Don't include full price/rent series in serialization to keep size manageable
+            "hist_price_series_length": len(self.hist_price_series),
+            "hist_rent_series_length": len(self.hist_rent_series),
+            # Include some summary statistics instead
+            "hist_price_min": min(self.hist_price_series) if self.hist_price_series else 0,
+            "hist_price_max": max(self.hist_price_series) if self.hist_price_series else 0,
+            "hist_price_mean": sum(self.hist_price_series) / len(self.hist_price_series) if self.hist_price_series else 0,
+            "hist_rent_min": min(self.hist_rent_series) if self.hist_rent_series else 0,
+            "hist_rent_max": max(self.hist_rent_series) if self.hist_rent_series else 0,
+            "hist_rent_mean": sum(self.hist_rent_series) / len(self.hist_rent_series) if self.hist_rent_series else 0,
+        }
 
 
 @dataclass
@@ -197,11 +271,43 @@ class SuburbData:
     liquidity_confidence: float
     overall_confidence: float
 
+    # Missing raw data fields
+    mean_appreciation: float = 0.0  # %/year - Base drift for all props in suburb
+    vol_appreciation: float = 0.0  # %/year - Shared σ for factor model
+    macroecon_beta: float = 1.0  # Loading to city-wide factor
+    zone_beta: float = 1.0  # Loading to region factor (eastern beaches, etc.)
+
     # Properties in this suburb
     properties: Dict[str, PropertyAttributes] = field(default_factory=dict)
 
     # Metric values specific to this suburb
     metrics: Dict[str, MetricValue] = field(default_factory=dict)
+
+    def __post_init__(self):
+        """Initialize default values and validate."""
+        # Set mean_appreciation based on appreciation_score if not provided
+        if self.mean_appreciation == 0.0:
+            # Convert 0-100 score to annual appreciation rate (0-10%)
+            self.mean_appreciation = (self.appreciation_score / 100.0) * 0.10
+
+        # Set vol_appreciation based on risk_score if not provided
+        if self.vol_appreciation == 0.0:
+            # Convert 0-100 risk score to volatility (0-15%)
+            self.vol_appreciation = (self.risk_score / 100.0) * 0.15
+
+        # Set macroecon_beta based on risk_score and appreciation_score if not provided
+        if self.macroecon_beta == 1.0:
+            # Higher risk and higher appreciation = higher beta
+            risk_factor = self.risk_score / 50.0  # Normalize to 0-2 range
+            appreciation_factor = self.appreciation_score / 50.0  # Normalize to 0-2 range
+            self.macroecon_beta = (risk_factor + appreciation_factor) / 2.0
+
+        # Set zone_beta based on location and risk_score if not provided
+        if self.zone_beta == 1.0:
+            # Use longitude as a proxy for east/west location
+            # Eastern suburbs (higher longitude) tend to have higher zone_beta
+            location_factor = (self.longitude - 150.5) * 2  # Normalize to roughly 0-2 range
+            self.zone_beta = (location_factor + (self.risk_score / 50.0)) / 2.0
 
     def get_metric(self, metric_name: str) -> Optional[MetricValue]:
         """Get a suburb-specific metric."""
@@ -308,6 +414,11 @@ class SuburbData:
             "zone_color": self.zone_color,
             "zone_category": self.zone_category,
             "property_count": len(self.properties),
+            # New fields
+            "mean_appreciation": self.mean_appreciation,
+            "vol_appreciation": self.vol_appreciation,
+            "macroecon_beta": self.macroecon_beta,
+            "zone_beta": self.zone_beta,
         }
 
 
@@ -469,6 +580,11 @@ class TLSDataManager:
                     risk_confidence=suburb_data["risk_confidence"],
                     liquidity_confidence=suburb_data["liquidity_confidence"],
                     overall_confidence=suburb_data["overall_confidence"],
+                    # New fields - use defaults if not in the data
+                    mean_appreciation=suburb_data.get("mean_appreciation", 0.0),
+                    vol_appreciation=suburb_data.get("vol_appreciation", 0.0),
+                    macroecon_beta=suburb_data.get("macroecon_beta", 1.0),
+                    zone_beta=suburb_data.get("zone_beta", 1.0),
                 )
 
                 # Add metrics
@@ -503,6 +619,12 @@ class TLSDataManager:
                         appreciation_modifier=property_data["appreciation_modifier"],
                         risk_modifier=property_data["risk_modifier"],
                         base_value=property_data["base_value"],
+                        # New fields - use defaults if not in the data
+                        zoning_code=property_data.get("zoning_code", "R2"),
+                        days_on_market_last_sale=property_data.get("days_on_market_last_sale", 30),
+                        last_sale_price=property_data.get("last_sale_price", property_data["base_value"]),
+                        hist_price_series=property_data.get("hist_price_series", []),
+                        hist_rent_series=property_data.get("hist_rent_series", []),
                     )
 
                     # Add metrics
@@ -541,16 +663,45 @@ class TLSDataManager:
 
             # Process metrics
             for i, (metric_name, metric_data) in enumerate(data["metrics"].items()):
-                # Create metric
-                metric = Metric(
-                    name=metric_name,
-                    category=getattr(MetricCategory, metric_data["category"].upper()),
-                    description=metric_data["description"],
-                    unit=metric_data["unit"],
-                    min_value=metric_data["min_value"],
-                    max_value=metric_data["max_value"],
-                    is_higher_better=metric_data["is_higher_better"],
+                # Map static file categories to enum values
+                category_mapping = {
+                    "real": "REAL_ESTATE",
+                    "supply": "SUPPLY_DEMAND",
+                    "economic": "ECONOMIC",
+                    "demographic": "DEMOGRAPHIC",
+                    "risk": "RISK",
+                    "location": "LOCATION",
+                    "temporal": "TEMPORAL"
+                }
+
+                # Get the correct category
+                file_category = metric_data["category"].lower()
+                enum_category = category_mapping.get(file_category, file_category.upper())
+
+                # Debug logging
+                logger.debug(
+                    f"Processing metric {metric_name}: file_category='{file_category}', enum_category='{enum_category}'"
                 )
+
+                # Create metric
+                try:
+                    metric = Metric(
+                        name=metric_name,
+                        category=getattr(MetricCategory, enum_category),
+                        description=metric_data["description"],
+                        unit=metric_data["unit"],
+                        min_value=metric_data["min_value"],
+                        max_value=metric_data["max_value"],
+                        is_higher_better=metric_data["is_higher_better"],
+                    )
+                except AttributeError as ae:
+                    logger.error(
+                        f"Invalid category for metric {metric_name}: '{enum_category}' not found in MetricCategory enum",
+                        file_category=file_category,
+                        enum_category=enum_category,
+                        available_categories=[e.value for e in MetricCategory],
+                    )
+                    raise
 
                 # Add values from suburbs
                 for suburb_id, suburb in self.suburbs.items():
@@ -600,24 +751,13 @@ class TLSDataManager:
 
         except Exception as e:
             logger.error(
-                "Error loading mock TLS data from static file",
+                "Error loading TLS data from static file",
                 error=str(e),
                 exc_info=True,
             )
 
-            # Fall back to generating mock data
-            logger.warning("Falling back to generating mock data")
-
-            # Report progress
-            if simulation_id:
-                await websocket_manager.send_warning(
-                    simulation_id=simulation_id,
-                    message="Error loading TLS data from static file, falling back to generating mock data",
-                    data={"error": str(e)},
-                )
-
-            # Generate mock data
-            await self._generate_mock_data(simulation_id)
+            # NO FALLBACK - MUST USE STATIC FILE ONLY
+            raise RuntimeError(f"Failed to load static TLS data file: {e}") from e
 
     async def _generate_mock_data(self, simulation_id: Optional[str] = None) -> None:
         """
@@ -1014,9 +1154,6 @@ class TLSDataManager:
         Args:
             simulation_id: Simulation ID for progress reporting
         """
-        # Get WebSocket manager for progress reporting
-        websocket_manager = get_websocket_manager()
-
         # Create metric correlations
         await self._create_metric_correlations(simulation_id)
 
@@ -1181,9 +1318,6 @@ class TLSDataManager:
 
         # Calculate percentiles for all metrics
         for metric_name, metric in self.metrics.items():
-            # Get all values
-            values = [v.value for v in metric.values.values()]
-
             # Calculate percentiles
             for suburb_id, value in metric.values.items():
                 percentile = metric.get_percentile(value.value)

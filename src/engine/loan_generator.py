@@ -210,6 +210,7 @@ async def generate_reinvestment_loans(
                 "term": loan_terms[i],
                 "interest_rate": interest_rates[i],
                 "origination_year": int(year),
+                "origination_month": 1,  # Default to January for reinvestment loans
                 "property_value": loan_sizes[i] / ltv_ratios[i],
                 "property_id": property_data.get("property_id", ""),
                 "suburb_id": property_data.get("suburb_id", ""),
@@ -537,6 +538,7 @@ async def generate_loans(context: SimulationContext, year: float = 0.0) -> None:
                 "term": loan_terms[i],
                 "interest_rate": interest_rates[i],
                 "origination_year": config.vintage_year,
+                "origination_month": 1,  # Default to January for initial loans
                 "property_value": loan_sizes[i] / ltv_ratios[i],
                 "property_id": property_data.get("property_id", ""),
                 "suburb_id": property_data.get("suburb_id", ""),

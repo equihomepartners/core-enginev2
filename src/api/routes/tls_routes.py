@@ -158,7 +158,7 @@ async def get_zone_distribution(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get zone distribution
@@ -198,7 +198,7 @@ async def get_metrics(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get metrics
@@ -252,7 +252,7 @@ async def get_metric_distribution(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get metric
@@ -393,7 +393,7 @@ async def get_suburbs(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get suburbs
@@ -464,7 +464,7 @@ async def get_suburb(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get suburb
@@ -547,7 +547,7 @@ async def get_suburb_properties(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get suburb
@@ -620,7 +620,7 @@ async def get_property(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get suburb
@@ -706,7 +706,7 @@ async def get_properties(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get properties
@@ -757,7 +757,7 @@ async def get_metric_correlations(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get metrics
@@ -823,7 +823,7 @@ async def get_zone_map(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get suburbs
@@ -873,7 +873,7 @@ async def get_property_distribution(
     """
     try:
         # Load data if not already loaded
-        if not tls_manager.is_data_loaded:
+        if not tls_manager.data_loaded:
             await tls_manager.load_data()
 
         # Get property type distribution

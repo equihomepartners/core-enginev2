@@ -1,0 +1,50 @@
+name: SDK Generation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'schemas/**'
+      - 'src/api/**'
+      - 'src/sdk/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'schemas/**'
+      - 'src/api/**'
+      - 'src/sdk/**'
+  workflow_dispatch:
+
+jobs:
+  sdk-generation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build SDK generator image
+        run: |
+          docker build -f sdk-build/Dockerfile -t sdkgen .
+
+      - name: Generate SDKs
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace sdkgen --all --validate
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if ! git diff --quiet --exit-code sdk-output; then
+            echo "::error::SDK out of date – run 'docker compose -f docker-compose.sdk.yml run --rm sdkgen'"
+            echo "changes=true" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload SDK artifacts
+        if: success() || steps.check-changes.outputs.changes == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: sdk-output
+          path: sdk-output/
+          retention-days: 7

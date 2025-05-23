@@ -48,7 +48,12 @@ class SimulationOrchestrator:
         self._modules[name] = module_func
 
         if position is not None:
-            self._module_sequence.insert(position, name)
+            # Ensure the sequence is long enough
+            while len(self._module_sequence) <= position:
+                self._module_sequence.append(None)
+
+            # Set the module at the specific position
+            self._module_sequence[position] = name
         else:
             self._module_sequence.append(name)
 
@@ -98,12 +103,17 @@ class SimulationOrchestrator:
         )
 
         try:
-            # Calculate progress increment per module
-            progress_increment = 100.0 / len(self._module_sequence)
-            current_progress = 0.0
+            # Filter out None values and execute modules in sequence
+            module_sequence = [name for name in self._module_sequence if name is not None]
+            logger.info(f"🚨 DEBUG: Full module sequence: {self._module_sequence}")
+            logger.info(f"🚨 DEBUG: Filtered module sequence: {module_sequence}")
 
-            # Execute modules in sequence
-            for i, module_name in enumerate(self._module_sequence):
+            # Calculate progress increment per module
+            progress_increment = 100.0 / len(module_sequence)
+            current_progress = 0.0
+            for i, module_name in enumerate(module_sequence):
+                logger.info(f"🚨 DEBUG: About to execute module {module_name} (position {i})")
+
                 # Check for cancellation
                 if websocket_manager.is_cancelled(context.run_id):
                     logger.info(
@@ -177,7 +187,7 @@ class SimulationOrchestrator:
                         data={
                             "execution_time": execution_time,
                             "module_index": i,
-                            "total_modules": len(self._module_sequence),
+                            "total_modules": len(module_sequence),
                         },
                     )
 
@@ -242,7 +252,7 @@ class SimulationOrchestrator:
                 message="Simulation completed",
                 data={
                     "execution_time": context.get_total_execution_time(),
-                    "module_count": len(self._module_sequence),
+                    "module_count": len(module_sequence),
                 },
             )
 
@@ -254,6 +264,23 @@ class SimulationOrchestrator:
                 simulation_id=context.run_id,
                 result=summary,
             )
+
+            # Store simulation context
+            try:
+                from src.engine.simulation_context import store_simulation_context
+                store_simulation_context(context)
+                logger.info("Stored simulation context", run_id=context.run_id)
+            except Exception as e:
+                logger.warning("Failed to store simulation context", run_id=context.run_id, error=str(e))
+
+            # Store results in persistence layer
+            try:
+                from src.persistence.result_store import get_result_store
+                result_store = get_result_store(context.run_id)
+                await result_store.store_result(context)
+                logger.info("Stored simulation results", run_id=context.run_id)
+            except Exception as e:
+                logger.warning("Failed to store simulation results", run_id=context.run_id, error=str(e))
 
             return summary
 
@@ -313,6 +340,8 @@ def get_orchestrator() -> SimulationOrchestrator:
         from src.exit_simulator.exit_simulator import simulate_exits
         from src.exit_simulator.enhanced_exit_simulator import simulate_enhanced_exits
         from src.reinvest_engine.reinvest_engine import reinvest_capital
+        from src.leverage_engine.leverage_manager import manage_leverage
+        from src.fee_engine.fee_engine import calculate_fees
 
         # Register implemented modules
         _global_orchestrator.register_module("tls_module", get_tls_manager, position=0)
@@ -323,16 +352,56 @@ def get_orchestrator() -> SimulationOrchestrator:
         _global_orchestrator.register_module("exit_simulator", simulate_exits, position=5)
         _global_orchestrator.register_module("enhanced_exit_simulator", simulate_enhanced_exits, position=6)
         _global_orchestrator.register_module("reinvest_engine", reinvest_capital, position=7)
+        _global_orchestrator.register_module("leverage_engine", manage_leverage, position=8)
+        _global_orchestrator.register_module("fee_engine", calculate_fees, position=9)
 
-        # These will be implemented later
-        # _global_orchestrator.register_module("leverage_engine", leverage_engine.manage_leverage)
-        # _global_orchestrator.register_module("fee_engine", fee_engine.calculate_fees)
-        # _global_orchestrator.register_module("cashflow_aggregator", cashflow_aggregator.aggregate_cashflows)
-        # _global_orchestrator.register_module("waterfall_engine", waterfall_engine.distribute_cashflows)
-        # _global_orchestrator.register_module("tranche_manager", tranche_manager.manage_tranches)
-        # _global_orchestrator.register_module("risk_metrics", risk_metrics.calculate_metrics)
-        # _global_orchestrator.register_module("guardrail_monitor", guardrail_monitor.check_guardrails)
-        # _global_orchestrator.register_module("performance_reporter", performance_reporter.generate_reports)
+        # Import cashflow aggregator
+        from src.cashflow_aggregator import aggregate_cashflows
+
+        # Register cashflow aggregator
+        _global_orchestrator.register_module("cashflow_aggregator", aggregate_cashflows, position=10)
+        logger.info(f"🚨 DEBUG: Module sequence after cashflow_aggregator: {_global_orchestrator._module_sequence}")
+
+        # Import waterfall engine
+        from src.waterfall_engine import calculate_waterfall
+
+        # Register waterfall engine
+        _global_orchestrator.register_module("waterfall_engine", calculate_waterfall, position=11)
+        logger.info(f"🚨 DEBUG: Module sequence after waterfall_engine: {_global_orchestrator._module_sequence}")
+
+        # Import tranche manager
+        from src.tranche_manager import manage_tranches
+
+        # Register tranche manager
+        _global_orchestrator.register_module("tranche_manager", manage_tranches, position=12)
+
+        # Import risk metrics
+        from src.risk.risk_metrics import RiskMetricsCalculator
+
+        # Register risk metrics
+        def calculate_risk_metrics(context: SimulationContext) -> None:
+            """Calculate risk metrics."""
+            risk_calculator = RiskMetricsCalculator(context)
+            risk_calculator.calculate_metrics()
+
+        _global_orchestrator.register_module("risk_metrics", calculate_risk_metrics, position=13)
+
+        # Import guardrail monitor
+        from src.risk.guardrail_monitor import GuardrailMonitor
+
+        # Register guardrail monitor
+        async def evaluate_guardrails(context: SimulationContext) -> None:
+            """Evaluate guardrails."""
+            guardrail_monitor = GuardrailMonitor(context)
+            await guardrail_monitor.evaluate_guardrails()
+
+        _global_orchestrator.register_module("guardrail_monitor", evaluate_guardrails, position=14)
+
+        # Import performance reporter
+        from src.performance_reporter import generate_performance_report
+
+        # Register performance reporter
+        _global_orchestrator.register_module("performance_reporter", generate_performance_report, position=15)
 
     return _global_orchestrator
 

@@ -46,11 +46,30 @@ async def initialize_tls_module(context: SimulationContext) -> None:
     context.suburb_count = len(tls_manager.suburbs)
     context.property_count = sum(len(suburb.properties) for suburb in tls_manager.suburbs.values())
 
+    # Populate context.tls_data with suburb information for price path module
+    context.tls_data = {}
+    for suburb_id, suburb in tls_manager.suburbs.items():
+        context.tls_data[suburb_id] = {
+            "suburb_id": suburb_id,
+            "name": suburb.name,
+            "zone": suburb.zone_category,
+            "zone_color": suburb.zone_color,
+            "appreciation_score": suburb.appreciation_score,
+            "risk_score": suburb.risk_score,
+            "liquidity_score": suburb.liquidity_score,
+            "overall_score": suburb.overall_score,
+            "latitude": suburb.latitude,
+            "longitude": suburb.longitude,
+            "state": suburb.state,
+            "postcode": suburb.postcode,
+        }
+
     logger.info(
         "TLS module initialized",
         zone_distribution=context.zone_distribution,
         suburb_count=context.suburb_count,
         property_count=context.property_count,
+        tls_data_populated=len(context.tls_data),
     )
 
 

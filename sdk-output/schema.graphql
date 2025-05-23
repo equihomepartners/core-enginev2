@@ -1,0 +1,49 @@
+type Mutation {
+  createSimulation(config: SimulationConfigInput!): SimulationStatus!
+  cancelSimulation(id: String!): SimulationStatus!
+}
+
+type Query {
+  hello: String!
+  simulation(id: String!): SimulationResult!
+  simulations(limit: Int! = 10, offset: Int! = 0): [SimulationStatus!]!
+}
+
+input SimulationConfigInput {
+  fundSize: Float!
+  fundTerm: Int!
+  vintageYear: Int!
+  managementFeeRate: Float = null
+  carriedInterestRate: Float = null
+  hurdleRate: Float = null
+  targetIrr: Float = null
+  targetEquityMultiple: Float = null
+}
+
+type SimulationMetrics {
+  irr: Float
+  equityMultiple: Float
+  roi: Float
+  paybackPeriod: Float
+  var95: Float
+  var99: Float
+  sharpeRatio: Float
+  maxDrawdown: Float
+}
+
+type SimulationResult {
+  id: String!
+  status: String!
+  createdAt: String
+  completedAt: String
+  executionTime: Float
+  metrics: SimulationMetrics
+}
+
+type SimulationStatus {
+  id: String!
+  status: String!
+  createdAt: String
+  completedAt: String
+  error: String
+}

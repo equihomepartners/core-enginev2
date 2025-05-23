@@ -12,10 +12,14 @@ from typing import Dict, List, Any, Optional, Set
 
 import numpy as np
 import structlog
+from fastapi import Depends, HTTPException
 
 from src.config.config_loader import SimulationConfig
 
 logger = structlog.get_logger(__name__)
+
+# Global simulation context storage
+_simulation_contexts: Dict[str, "SimulationContext"] = {}
 
 
 class SimulationContext:
@@ -166,6 +170,41 @@ class SimulationContext:
         """
         return time.time() - self.start_time
 
+    def _extract_api_cashflows(self) -> List[Dict[str, Any]]:
+        """
+        Extract cashflows in the format expected by the API.
+
+        Returns the fund-level cashflows which contain comprehensive cashflow data
+        including capital calls, loan investments, fees, distributions, etc.
+
+        Returns:
+            List of fund-level cashflow dictionaries
+        """
+        if not hasattr(self, "cashflows") or not self.cashflows:
+            return []
+
+        cashflows_data = self.cashflows
+
+        # The cashflows are stored as a complex structure from the cashflow aggregator
+        if isinstance(cashflows_data, dict):
+            # Extract fund-level cashflows - these are the main cashflows for API consumption
+            if "fund_level_cashflows" in cashflows_data:
+                fund_cashflows = cashflows_data["fund_level_cashflows"]
+                if isinstance(fund_cashflows, list):
+                    return fund_cashflows
+
+            # Fallback to LP cashflows if fund-level not available
+            if "lp_cashflows" in cashflows_data:
+                lp_cashflows = cashflows_data["lp_cashflows"]
+                if isinstance(lp_cashflows, list):
+                    return lp_cashflows
+
+        # If cashflows_data is already a list, use it directly
+        elif isinstance(cashflows_data, list):
+            return cashflows_data
+
+        return []
+
     def get_summary(self) -> Dict[str, Any]:
         """
         Get a summary of the simulation results.
@@ -231,9 +270,70 @@ class SimulationContext:
             },
             "tranches": {
                 "count": len(self.tranches),
-                "names": [t.get("name", f"Tranche {i}") for i, t in enumerate(self.tranches)],
+                "names": [
+                    (t.get("name", f"Tranche {i}") if isinstance(t, dict)
+                     else getattr(t, "name", f"Tranche {i}"))
+                    for i, t in enumerate(self.tranches)
+                ],
             },
             "capital_allocation": capital_allocation,
             "loans": self.loans,
             "loan_portfolio": loan_portfolio,
+            "cashflows": self._extract_api_cashflows(),
+            "waterfall": getattr(self, "waterfall", None),  # Include waterfall results
         }
+
+
+# Store simulation context
+def store_simulation_context(context: SimulationContext) -> None:
+    """
+    Store a simulation context in the global storage.
+
+    Args:
+        context: Simulation context to store
+    """
+    _simulation_contexts[context.run_id] = context
+    logger.info("Stored simulation context", run_id=context.run_id)
+
+
+# Get simulation context by ID
+def get_simulation_context_by_id(simulation_id: str) -> Optional[SimulationContext]:
+    """
+    Get a simulation context by ID.
+
+    Args:
+        simulation_id: Simulation ID
+
+    Returns:
+        Simulation context or None if not found
+    """
+    return _simulation_contexts.get(simulation_id)
+
+
+# FastAPI dependency for getting simulation context
+async def get_simulation_context(simulation_id: Optional[str] = None) -> SimulationContext:
+    """
+    Get the simulation context for the current request.
+
+    This function is used as a FastAPI dependency to inject the simulation context
+    into API endpoints.
+
+    Args:
+        simulation_id: Simulation ID (optional, can be provided in the request body)
+
+    Returns:
+        Simulation context
+
+    Raises:
+        HTTPException: If the simulation context is not found
+    """
+    # If no simulation ID is provided, return the most recent context
+    if not simulation_id and _simulation_contexts:
+        return list(_simulation_contexts.values())[-1]
+
+    # If simulation ID is provided, get the context
+    if simulation_id and simulation_id in _simulation_contexts:
+        return _simulation_contexts[simulation_id]
+
+    # If no context is found, raise an exception
+    raise HTTPException(status_code=404, detail="Simulation context not found")

@@ -1,0 +1,379 @@
+asyncapi: '2.6.0'
+info:
+  title: EQU IHOME SIM ENGINE WebSocket API
+  version: '1.0.0'
+  description: |
+    WebSocket API for real-time simulation updates in the EQU IHOME SIM ENGINE.
+    This API allows clients to subscribe to simulation events and receive real-time updates
+    about simulation progress, intermediate results, and final outcomes.
+  contact:
+    name: EQU IHOME Team
+  license:
+    name: Proprietary
+
+servers:
+  production:
+    url: ws://localhost:8000/ws
+    protocol: ws
+    description: Development WebSocket server
+
+channels:
+  /simulations/{simulationId}:
+    description: Channel for receiving updates about a specific simulation
+    parameters:
+      simulationId:
+        description: The ID of the simulation to subscribe to
+        schema:
+          type: string
+          format: uuid
+    subscribe:
+      summary: Receive updates about a simulation
+      operationId: subscribeToSimulation
+      message:
+        oneOf:
+          - $ref: '#/components/messages/ProgressUpdate'
+          - $ref: '#/components/messages/ModuleStarted'
+          - $ref: '#/components/messages/ModuleCompleted'
+          - $ref: '#/components/messages/IntermediateResult'
+          - $ref: '#/components/messages/FinalResult'
+          - $ref: '#/components/messages/ErrorUpdate'
+          - $ref: '#/components/messages/GuardrailViolation'
+    publish:
+      summary: Send commands related to a simulation
+      operationId: sendSimulationCommand
+      message:
+        oneOf:
+          - $ref: '#/components/messages/SubscribeCommand'
+          - $ref: '#/components/messages/UnsubscribeCommand'
+          - $ref: '#/components/messages/CancelCommand'
+
+components:
+  messages:
+    # Subscription messages (client to server)
+    SubscribeCommand:
+      name: SubscribeCommand
+      title: Subscribe to simulation updates
+      summary: Command to subscribe to updates for a specific simulation
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/SubscribeCommandPayload'
+    
+    UnsubscribeCommand:
+      name: UnsubscribeCommand
+      title: Unsubscribe from simulation updates
+      summary: Command to unsubscribe from updates for a specific simulation
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/UnsubscribeCommandPayload'
+    
+    CancelCommand:
+      name: CancelCommand
+      title: Cancel a simulation
+      summary: Command to cancel a running simulation
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/CancelCommandPayload'
+    
+    # Update messages (server to client)
+    ProgressUpdate:
+      name: ProgressUpdate
+      title: Simulation progress update
+      summary: Update about the progress of a simulation
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ProgressUpdatePayload'
+    
+    ModuleStarted:
+      name: ModuleStarted
+      title: Simulation module started
+      summary: Notification that a simulation module has started execution
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ModuleStartedPayload'
+    
+    ModuleCompleted:
+      name: ModuleCompleted
+      title: Simulation module completed
+      summary: Notification that a simulation module has completed execution
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ModuleCompletedPayload'
+    
+    IntermediateResult:
+      name: IntermediateResult
+      title: Intermediate simulation result
+      summary: Intermediate result from a simulation module
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/IntermediateResultPayload'
+    
+    FinalResult:
+      name: FinalResult
+      title: Final simulation result
+      summary: Final result of a completed simulation
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/FinalResultPayload'
+    
+    ErrorUpdate:
+      name: ErrorUpdate
+      title: Simulation error
+      summary: Error that occurred during simulation execution
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ErrorUpdatePayload'
+    
+    GuardrailViolation:
+      name: GuardrailViolation
+      title: Guardrail violation
+      summary: Notification that a guardrail has been violated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/GuardrailViolationPayload'
+  
+  schemas:
+    # Command payloads (client to server)
+    SubscribeCommandPayload:
+      type: object
+      required:
+        - action
+        - simulation_id
+      properties:
+        action:
+          type: string
+          enum: [subscribe]
+          description: The action to perform
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation to subscribe to
+    
+    UnsubscribeCommandPayload:
+      type: object
+      required:
+        - action
+        - simulation_id
+      properties:
+        action:
+          type: string
+          enum: [unsubscribe]
+          description: The action to perform
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation to unsubscribe from
+    
+    CancelCommandPayload:
+      type: object
+      required:
+        - action
+        - simulation_id
+      properties:
+        action:
+          type: string
+          enum: [cancel]
+          description: The action to perform
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation to cancel
+    
+    # Update payloads (server to client)
+    ProgressUpdatePayload:
+      type: object
+      required:
+        - type
+        - simulation_id
+        - progress
+      properties:
+        type:
+          type: string
+          enum: [progress]
+          description: The type of update
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Progress percentage (0-100)
+        module:
+          type: string
+          description: The current module being executed
+        message:
+          type: string
+          description: Optional message about the progress
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the update
+    
+    ModuleStartedPayload:
+      type: object
+      required:
+        - type
+        - simulation_id
+        - module
+      properties:
+        type:
+          type: string
+          enum: [module_started]
+          description: The type of update
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation
+        module:
+          type: string
+          description: The module that started
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the update
+    
+    ModuleCompletedPayload:
+      type: object
+      required:
+        - type
+        - simulation_id
+        - module
+      properties:
+        type:
+          type: string
+          enum: [module_completed]
+          description: The type of update
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation
+        module:
+          type: string
+          description: The module that completed
+        execution_time:
+          type: number
+          description: Execution time in seconds
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the update
+    
+    IntermediateResultPayload:
+      type: object
+      required:
+        - type
+        - simulation_id
+        - module
+        - data
+      properties:
+        type:
+          type: string
+          enum: [intermediate_result]
+          description: The type of update
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation
+        module:
+          type: string
+          description: The module that produced the result
+        data:
+          type: object
+          description: Module-specific result data
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the update
+    
+    FinalResultPayload:
+      type: object
+      required:
+        - type
+        - simulation_id
+        - result
+      properties:
+        type:
+          type: string
+          enum: [result]
+          description: The type of update
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation
+        result:
+          type: object
+          description: The final simulation result
+        execution_time:
+          type: number
+          description: Total execution time in seconds
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the update
+    
+    ErrorUpdatePayload:
+      type: object
+      required:
+        - type
+        - simulation_id
+        - error
+      properties:
+        type:
+          type: string
+          enum: [error]
+          description: The type of update
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation
+        error:
+          type: string
+          description: Error message
+        module:
+          type: string
+          description: The module where the error occurred
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the update
+    
+    GuardrailViolationPayload:
+      type: object
+      required:
+        - type
+        - simulation_id
+        - violation
+      properties:
+        type:
+          type: string
+          enum: [guardrail_violation]
+          description: The type of update
+        simulation_id:
+          type: string
+          format: uuid
+          description: The ID of the simulation
+        violation:
+          type: object
+          required:
+            - rule
+            - severity
+            - message
+          properties:
+            rule:
+              type: string
+              description: The guardrail rule that was violated
+            severity:
+              type: string
+              enum: [info, warning, error]
+              description: The severity of the violation
+            message:
+              type: string
+              description: Description of the violation
+            details:
+              type: object
+              description: Additional details about the violation
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the update
